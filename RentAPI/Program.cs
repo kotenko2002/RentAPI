@@ -1,3 +1,5 @@
+using RentAPI.Infrastructure.DependencyInjection;
+
 namespace RentAPI
 {
     public class Program
@@ -6,7 +8,9 @@ namespace RentAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            builder.Services.AddCustomServices();
+
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
