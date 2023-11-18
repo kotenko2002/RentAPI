@@ -1,4 +1,5 @@
 ﻿using Rent.Service.Services.Authorization;
+using Rent.Storage.Uow;
 
 namespace RentAPI.Infrastructure.Extensions
 {
@@ -17,6 +18,7 @@ namespace RentAPI.Infrastructure.Extensions
 
         public static void AddRepositories(this IServiceCollection repositories)
         {
+            repositories.AddScoped<IUnitOfWork, UnitOfWork>();
         }
     }
 }
