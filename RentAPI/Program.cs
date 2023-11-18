@@ -1,3 +1,7 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Rent.Entities.Users;
+using Rent.Storage.Configuration;
 using RentAPI.Infrastructure.DependencyInjection;
 
 namespace RentAPI
@@ -7,6 +11,16 @@ namespace RentAPI
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            ConfigurationManager configuration = builder.Configuration;
+
+            #region MyRegion
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(configuration.GetConnectionString("ConnStr"), b => b.MigrationsAssembly("RentAPI")));
+
+            builder.Services.AddIdentity<User, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+            #endregion
 
             builder.Services.AddCustomServices();
 

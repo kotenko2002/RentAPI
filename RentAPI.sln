@@ -3,19 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34009.444
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RentAPI", "RentAPI\RentAPI.csproj", "{D21CCEF4-2DE4-43F9-822A-6C3CF254D809}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RentAPI", "RentAPI\RentAPI.csproj", "{D21CCEF4-2DE4-43F9-822A-6C3CF254D809}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App", "App", "{C8CB0992-0BD8-4CD9-B784-6704078B5B2B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{8C86D85D-D6F8-4273-85F0-4B43B9EA1736}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rent.Entities", "Libraries\Rent.Entities\Rent.Entities.csproj", "{10FDC144-C98E-4C70-947C-B8A4BF98DE43}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rent.Entities", "Libraries\Rent.Entities\Rent.Entities.csproj", "{10FDC144-C98E-4C70-947C-B8A4BF98DE43}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rent.Service", "Libraries\Rent.Service\Rent.Service.csproj", "{D64A101F-1DE8-453E-A2CB-7C4AF5BA1234}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rent.Service", "Libraries\Rent.Service\Rent.Service.csproj", "{D64A101F-1DE8-453E-A2CB-7C4AF5BA1234}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rent.Storage", "Libraries\Rent.Storage\Rent.Storage.csproj", "{43220F88-9A09-482A-8CB4-6F1764BBBC3B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rent.Сommon", "Libraries\Rent.Сommon\Rent.Сommon.csproj", "{BCCFE982-7B76-435C-89FC-E12FBE97767F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rent.Storage", "Libraries\Rent.Storage\Rent.Storage.csproj", "{43220F88-9A09-482A-8CB4-6F1764BBBC3B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,10 +37,6 @@ Global
 		{43220F88-9A09-482A-8CB4-6F1764BBBC3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43220F88-9A09-482A-8CB4-6F1764BBBC3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43220F88-9A09-482A-8CB4-6F1764BBBC3B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BCCFE982-7B76-435C-89FC-E12FBE97767F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BCCFE982-7B76-435C-89FC-E12FBE97767F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BCCFE982-7B76-435C-89FC-E12FBE97767F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BCCFE982-7B76-435C-89FC-E12FBE97767F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -52,7 +46,6 @@ Global
 		{10FDC144-C98E-4C70-947C-B8A4BF98DE43} = {8C86D85D-D6F8-4273-85F0-4B43B9EA1736}
 		{D64A101F-1DE8-453E-A2CB-7C4AF5BA1234} = {8C86D85D-D6F8-4273-85F0-4B43B9EA1736}
 		{43220F88-9A09-482A-8CB4-6F1764BBBC3B} = {8C86D85D-D6F8-4273-85F0-4B43B9EA1736}
-		{BCCFE982-7B76-435C-89FC-E12FBE97767F} = {8C86D85D-D6F8-4273-85F0-4B43B9EA1736}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E0899C20-0D0E-4DFD-86CE-D9FF7AEDBE8E}

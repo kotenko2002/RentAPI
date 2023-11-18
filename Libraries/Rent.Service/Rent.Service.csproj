@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Rent.Storage\Rent.Storage.csproj" />
-    <ProjectReference Include="..\Rent.Сommon\Rent.Сommon.csproj" />
   </ItemGroup>
 
 </Project>
