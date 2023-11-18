@@ -10,6 +10,7 @@ namespace RentAPI.Infrastructure.Mapper
         {
             CreateMap<LoginModel, LoginDescriptor>();
             CreateMap<RegisterModel, RegisterDescriptor>();
+            CreateMap<RefreshTokensModel, RefreshTokensDescriptor>();
         }
     }
 }

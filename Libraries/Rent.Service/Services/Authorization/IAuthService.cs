@@ -7,5 +7,7 @@ namespace Rent.Service.Services.Authorization
     {
         Task Register(RegisterDescriptor descriptor);
         Task<TokensPairView> Login(LoginDescriptor descriptor);
+        Task<TokensPairView> RefreshTokens(RefreshTokensDescriptor descriptor);
+        Task Logout(string username);
     }
 }

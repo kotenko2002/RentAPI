@@ -80,6 +80,47 @@ namespace Rent.Service.Services.Authorization
             return new TokensPairView(accessToken, user);
         }
 
+        public async Task<TokensPairView> RefreshTokens(RefreshTokensDescriptor descriptor)
+        {
+            string accessToken = descriptor.AccessToken;
+            string refreshToken = descriptor.RefreshToken;
+
+            ClaimsPrincipal principal = GetPrincipalFromExpiredToken(accessToken);
+            if (principal == null)
+            {
+                throw new BusinessException(HttpStatusCode.BadRequest, "Invalid access token or refresh token");
+            }
+
+            string username = principal.Identity.Name;
+            User user = await _userManager.FindByNameAsync(username);
+
+            if (user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+            {
+                throw new BusinessException(HttpStatusCode.BadRequest, "Invalid access token or refresh token");
+            }
+
+            JwtSecurityToken newAccessToken = GenerateAccessToken(principal.Claims.ToList());
+            string newRefreshToken = GenerateRefreshToken();
+
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(_jwtOptions.RefreshTokenValidityInDays);
+            await _userManager.UpdateAsync(user);
+
+            return new TokensPairView(newAccessToken, user);
+        }
+
+        public async Task Logout(string username)
+        {
+            User user = await _userManager.FindByNameAsync(username);
+            if (user == null)
+            {
+                throw new BusinessException(HttpStatusCode.BadRequest, "Invalid access token");
+            }
+
+            user.RefreshToken = null;
+            await _userManager.UpdateAsync(user);
+        }
+
         private JwtSecurityToken GenerateAccessToken(List<Claim> authClaims)
         {
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Secret));
@@ -98,6 +139,28 @@ namespace Rent.Service.Services.Authorization
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(randomNumber);
             return Convert.ToBase64String(randomNumber);
+        }
+        private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+        {
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Secret)),
+                ValidateLifetime = false
+            };
+
+            ClaimsPrincipal principal = new JwtSecurityTokenHandler()
+                .ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
+
+            if (securityToken is not JwtSecurityToken jwtSecurityToken ||
+                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new SecurityTokenException("Invalid token");
+            }
+
+            return principal;
         }
     }
 }

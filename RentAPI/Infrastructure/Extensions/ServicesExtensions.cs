@@ -1,6 +1,6 @@
 ﻿using Rent.Service.Services.Authorization;
 
-namespace RentAPI.Infrastructure.DependencyInjection
+namespace RentAPI.Infrastructure.Extensions
 {
     public static class ServicesExtensions
     {

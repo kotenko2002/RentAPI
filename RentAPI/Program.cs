@@ -6,7 +6,7 @@ using Microsoft.OpenApi.Models;
 using Rent.Entities.Users;
 using Rent.Service.Configuration;
 using Rent.Storage.Configuration;
-using RentAPI.Infrastructure.DependencyInjection;
+using RentAPI.Infrastructure.Extensions;
 using RentAPI.Infrastructure.Middlewares;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
@@ -56,6 +56,7 @@ builder.Services.AddAuthentication(options =>
 #endregion
 
 builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
