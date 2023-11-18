@@ -1,4 +1,4 @@
-﻿namespace Rent.Service.Authorization.Descriptors
+﻿namespace Rent.Service.Services.Authorization.Descriptors
 {
     public class LoginDescriptor
     {

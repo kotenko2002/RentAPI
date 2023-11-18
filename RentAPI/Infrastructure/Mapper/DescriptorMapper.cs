@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Rent.Service.Authorization.Descriptors;
+using Rent.Service.Services.Authorization.Descriptors;
 using RentAPI.Models.Auth;
 
 namespace RentAPI.Infrastructure.Mapper
@@ -9,6 +9,7 @@ namespace RentAPI.Infrastructure.Mapper
         public DescriptorMapper()
         {
             CreateMap<LoginModel, LoginDescriptor>();
+            CreateMap<RegisterModel, RegisterDescriptor>();
         }
     }
 }

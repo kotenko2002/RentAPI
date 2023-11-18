@@ -1,4 +1,4 @@
-﻿using Rent.Service.Authorization;
+﻿using Rent.Service.Services.Authorization;
 
 namespace RentAPI.Infrastructure.DependencyInjection
 {
