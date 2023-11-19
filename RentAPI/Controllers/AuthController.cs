@@ -27,8 +27,7 @@ namespace RentAPI.Controllers
             _authService = authService;
         }
 
-        [HttpPost]
-        [Route("register")]
+        [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
             var descriptor = _mapper.Map<RegisterDescriptor>(model);
@@ -37,8 +36,7 @@ namespace RentAPI.Controllers
             return Ok("User created successfully!");
         }
 
-        [HttpPost]
-        [Route("login")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
             var descriptor = _mapper.Map<LoginDescriptor>(model);
@@ -47,8 +45,7 @@ namespace RentAPI.Controllers
             return Ok(tokens);
         }
 
-        [HttpPost]
-        [Route("refresh-tokens")]
+        [HttpPost("refresh-tokens")]
         public async Task<IActionResult> RefreshTokens(RefreshTokensModel model)
         {
             var descriptor = _mapper.Map<RefreshTokensDescriptor>(model);
@@ -57,9 +54,8 @@ namespace RentAPI.Controllers
             return Ok(newTokens);
         }
 
-        [HttpDelete]
-        [Route("logout")]
         [Authorize]
+        [HttpDelete("logout")]
         public async Task<IActionResult> Logout()
         {
             string username = _httpContextAccessor.HttpContext.User.GetUsername();
