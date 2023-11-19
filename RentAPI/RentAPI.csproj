@@ -23,4 +23,8 @@
     <ProjectReference Include="..\Libraries\Rent.Storage\Rent.Storage.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Uploads\" />
+  </ItemGroup>
+
 </Project>

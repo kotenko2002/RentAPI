@@ -27,8 +27,7 @@ namespace RentAPI.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    LandlordId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CityId = table.Column<int>(type: "int", nullable: true),
                     Address = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
@@ -39,8 +38,8 @@ namespace RentAPI.Migrations
                 {
                     table.PrimaryKey("PK_Properties", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Properties_AspNetUsers_LandlordId",
-                        column: x => x.LandlordId,
+                        name: "FK_Properties_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
@@ -57,8 +56,7 @@ namespace RentAPI.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    TenantId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     PropertyId = table.Column<int>(type: "int", nullable: false),
                     Message = table.Column<string>(type: "nvarchar(400)", maxLength: 400, nullable: false),
                     Rate = table.Column<int>(type: "int", nullable: false)
@@ -67,8 +65,8 @@ namespace RentAPI.Migrations
                 {
                     table.PrimaryKey("PK_Comments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Comments_AspNetUsers_TenantId",
-                        column: x => x.TenantId,
+                        name: "FK_Comments_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
@@ -85,8 +83,7 @@ namespace RentAPI.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    TenantId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     PropertyId = table.Column<int>(type: "int", nullable: false),
                     Message = table.Column<string>(type: "nvarchar(400)", maxLength: 400, nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false)
@@ -95,8 +92,8 @@ namespace RentAPI.Migrations
                 {
                     table.PrimaryKey("PK_Responses", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Responses_AspNetUsers_TenantId",
-                        column: x => x.TenantId,
+                        name: "FK_Responses_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
@@ -113,9 +110,9 @@ namespace RentAPI.Migrations
                 column: "PropertyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_TenantId",
+                name: "IX_Comments_UserId",
                 table: "Comments",
-                column: "TenantId");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Properties_CityId",
@@ -123,9 +120,9 @@ namespace RentAPI.Migrations
                 column: "CityId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Properties_LandlordId",
+                name: "IX_Properties_UserId",
                 table: "Properties",
-                column: "LandlordId");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Responses_PropertyId",
@@ -133,9 +130,9 @@ namespace RentAPI.Migrations
                 column: "PropertyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Responses_TenantId",
+                name: "IX_Responses_UserId",
                 table: "Responses",
-                column: "TenantId");
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

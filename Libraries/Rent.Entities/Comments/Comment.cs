@@ -5,7 +5,7 @@ namespace Rent.Entities.Comments
 {
     public class Comment : BaseEntity
     {
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public virtual User Tenant { get; set; }
 
         public int PropertyId { get; set; }

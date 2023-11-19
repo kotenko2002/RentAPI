@@ -6,6 +6,11 @@ namespace RentAPI.Infrastructure.Extensions
 {
     public static class ClaimsPrincipalExtensions
     {
+        public static string GetUserId(this ClaimsPrincipal principal)
+        {
+            return GetInfoByDataName(principal, "userId");
+        }
+
         public static string GetUsername(this ClaimsPrincipal principal)
         {
             return GetInfoByDataName(principal, ClaimTypes.Name);

@@ -1,4 +1,5 @@
-﻿using Rent.Entities.Properties;
+﻿using Microsoft.EntityFrameworkCore;
+using Rent.Entities.Properties;
 using Rent.Storage.Configuration;
 using Rent.Storage.Configuration.BaseRepository;
 

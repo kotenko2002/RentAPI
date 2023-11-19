@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Rent.Entities.Cities;
 using Rent.Service.Services.Cities;
+using Rent.Service.Services.FileStorage;
 
 namespace RentAPI.Controllers
 {
@@ -11,13 +12,14 @@ namespace RentAPI.Controllers
     public class CityController : ControllerBase
     {
         private readonly ICityService _cityService;
-
-        public CityController(ICityService cityService)
+        
+        public CityController(
+            ICityService cityService)
         {
             _cityService = cityService;
         }
 
-        [HttpGet]
+        [HttpGet("items")]
         public async Task<IActionResult> GetAllCities()
         {
             return Ok(await _cityService.GetAllCities());

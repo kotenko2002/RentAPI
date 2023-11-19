@@ -65,6 +65,7 @@ namespace Rent.Service.Services.Authorization
 
             var authClaims = new List<Claim>
             {
+                new Claim("userId", user.Id),
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };

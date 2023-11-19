@@ -1,5 +1,7 @@
 ﻿using Rent.Service.Services.Authorization;
 using Rent.Service.Services.Cities;
+using Rent.Service.Services.FileStorage;
+using Rent.Service.Services.Properties;
 using Rent.Storage.Uow;
 
 namespace RentAPI.Infrastructure.Extensions
@@ -16,6 +18,9 @@ namespace RentAPI.Infrastructure.Extensions
         {
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ICityService, CityService>();
+            services.AddScoped<IPropertyService, PropertyService>();
+
+            services.AddScoped<IFileStorageService, ServerStorage>();
         }
 
         public static void AddRepositories(this IServiceCollection repositories)

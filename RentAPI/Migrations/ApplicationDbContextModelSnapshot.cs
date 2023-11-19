@@ -192,17 +192,14 @@ namespace RentAPI.Migrations
                     b.Property<int>("Rate")
                         .HasColumnType("int");
 
-                    b.Property<string>("TenantId")
+                    b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PropertyId");
 
-                    b.HasIndex("TenantId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Comments");
                 });
@@ -228,23 +225,20 @@ namespace RentAPI.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("LandlordId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("Price")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CityId");
 
-                    b.HasIndex("LandlordId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Properties");
                 });
@@ -268,17 +262,14 @@ namespace RentAPI.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<string>("TenantId")
+                    b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PropertyId");
 
-                    b.HasIndex("TenantId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Responses");
                 });
@@ -415,7 +406,7 @@ namespace RentAPI.Migrations
 
                     b.HasOne("Rent.Entities.Users.User", "Tenant")
                         .WithMany()
-                        .HasForeignKey("TenantId");
+                        .HasForeignKey("UserId");
 
                     b.Navigation("City");
 
@@ -431,7 +422,7 @@ namespace RentAPI.Migrations
 
                     b.HasOne("Rent.Entities.Users.User", "Landlord")
                         .WithMany("Properties")
-                        .HasForeignKey("LandlordId");
+                        .HasForeignKey("UserId");
 
                     b.Navigation("City");
 
@@ -448,7 +439,7 @@ namespace RentAPI.Migrations
 
                     b.HasOne("Rent.Entities.Users.User", "Tenant")
                         .WithMany()
-                        .HasForeignKey("TenantId");
+                        .HasForeignKey("UserId");
 
                     b.Navigation("City");
 
