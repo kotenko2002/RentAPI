@@ -5,7 +5,7 @@ namespace Rent.Service.Services.Properties
 {
     public interface IPropertyService
     {
-        Task Add(Property entity);
+        Task Add(AddPropertyDescriptor entity);
         Task Edit(EditPropertyDescriptor descriptor, string userId);
         Task Delete(int id, string userId);
     }

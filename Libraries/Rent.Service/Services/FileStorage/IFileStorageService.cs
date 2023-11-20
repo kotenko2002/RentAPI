@@ -1,7 +1,9 @@
-﻿namespace Rent.Service.Services.FileStorage
+﻿using Microsoft.AspNetCore.Http;
+
+namespace Rent.Service.Services.FileStorage
 {
     public interface IFileStorageService
     {
-        void Test();
+        Task UploadNewPropertyPhotos(IFormFile[] Photos, int propertyId);
     }
 }

@@ -18,7 +18,8 @@ namespace RentAPI.Infrastructure.Mapper
             CreateMap<RefreshTokensModel, RefreshTokensDescriptor>();
             CreateMap<EditPropertyModel, EditPropertyDescriptor>();
 
-            CreateMap<AddPropertyModel, Property>();
+            CreateMap<AddPropertyModel, AddPropertyDescriptor>();
+            CreateMap<AddPropertyDescriptor, Property>(); 
 
             CreateMap<City, CityView>();
 

@@ -30,12 +30,12 @@ namespace RentAPI.Controllers
         }
 
         [HttpPost("add")]
-        public async Task<IActionResult> AddNewProperty(AddPropertyModel model)
+        public async Task<IActionResult> AddNewProperty([FromForm] AddPropertyModel model)
         {
-            var entity = _mapper.Map<Property>(model);
-            entity.UserId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var descriptor = _mapper.Map<AddPropertyDescriptor>(model);
+            descriptor.UserId = _httpContextAccessor.HttpContext.User.GetUserId();
 
-            await _propertyService.Add(entity);
+            await _propertyService.Add(descriptor);
 
             return Ok("added successfully!");
         }

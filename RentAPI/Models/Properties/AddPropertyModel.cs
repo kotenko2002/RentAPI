@@ -22,5 +22,8 @@ namespace RentAPI.Models.Properties
 
         [Required]
         public PropertyStatus Status { get; set; }
+
+        [Required]
+        public IFormFile[] Photos { get; set; }
     }
 }

@@ -1,22 +1,38 @@
-﻿using Rent.Entities.Properties;
+﻿using AutoMapper;
+using Rent.Common;
+using Rent.Entities.Properties;
+using Rent.Service.Services.FileStorage;
 using Rent.Service.Services.Properties.Descriptors;
 using Rent.Storage.Uow;
+using System.Net;
 
 namespace Rent.Service.Services.Properties
 {
     public class PropertyService : IPropertyService
     {
+        private readonly IMapper _mapper;
         private readonly IUnitOfWork _uow;
+        private readonly IFileStorageService _fileStorageService;
 
-        public PropertyService(IUnitOfWork uow)
+        public PropertyService(
+            IMapper mapper,
+            IUnitOfWork uow,
+            IFileStorageService fileStorageService)
         {
+            _mapper = mapper;
             _uow = uow;
+            _fileStorageService = fileStorageService;
         }
 
-        public async Task Add(Property entity)
+        public async Task Add(AddPropertyDescriptor descriptor)
         {
+            var entity = _mapper.Map<Property>(descriptor);
+
             await _uow.PropertyRepository.AddAsync(entity);
             await _uow.CompleteAsync();
+
+            await _fileStorageService.UploadNewPropertyPhotos(descriptor.Photos, entity.Id);
+            //add files
         }
 
         public async Task Edit(EditPropertyDescriptor descriptor, string userId)
@@ -25,12 +41,13 @@ namespace Rent.Service.Services.Properties
 
             if(entity == null)
             {
-                //error
+                throw new BusinessException(HttpStatusCode.NotFound, "Property not found.");
             }
 
             if (entity.UserId != userId)
             {
-                //error
+                throw new BusinessException(HttpStatusCode.Forbidden,
+                    "Access denied. You do not have permission to edit this property.");
             }
 
             if (descriptor.CityId.HasValue)
@@ -57,7 +74,8 @@ namespace Rent.Service.Services.Properties
 
             if (entity.UserId != userId)
             {
-                //error
+                throw new BusinessException(HttpStatusCode.Forbidden,
+                    "Access denied. You do not have permission to delete this property.");
             }
 
             await _uow.PropertyRepository.RemoveAsync(entity);

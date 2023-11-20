@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Rent.Entities.Cities;
 using Rent.Service.Services.Cities;
-using Rent.Service.Services.FileStorage;
 
 namespace RentAPI.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class CityController : ControllerBase
