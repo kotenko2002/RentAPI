@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Rent.Entities.Properties;
 using Rent.Entities.Users;
 using Rent.Service.Services.Properties;
 using Rent.Service.Services.Properties.Descriptors;

@@ -5,5 +5,6 @@ namespace Rent.Storage.Repositories.Properties
 {
     public interface IPropertyRepository : IBaseRepository<Property>
     {
+        Task<Property> GetFullPropertyById(int propertyId);
     }
 }
