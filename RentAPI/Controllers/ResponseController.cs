@@ -33,11 +33,11 @@ namespace RentAPI.Controllers
         public async Task<IActionResult> AddNewResponse(AddResponseModel model)
         {
             var entity = _mapper.Map<Response>(model);
-            entity.UserId = _httpContextAccessor.HttpContext.User.GetUserId();
+            entity.TenantId = _httpContextAccessor.HttpContext.User.GetUserId();
 
             await _responseService.Add(entity);
 
-            return Ok();
+            return Ok("Added successfully!");
         }
 
         [Authorize(Roles = Roles.Landlord)]
@@ -46,9 +46,9 @@ namespace RentAPI.Controllers
         {
             string landlordId = _httpContextAccessor.HttpContext.User.GetUserId();
 
-            await _responseService.GetAllResponsesByPropertyId(propertyId, landlordId);
+            var responses = await _responseService.GetAllResponsesByPropertyId(propertyId, landlordId);
 
-            return Ok();
+            return Ok(responses);
         }
     }
 }

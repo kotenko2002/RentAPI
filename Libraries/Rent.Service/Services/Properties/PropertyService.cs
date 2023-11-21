@@ -44,7 +44,7 @@ namespace Rent.Service.Services.Properties
                 throw new BusinessException(HttpStatusCode.NotFound, "Property not found.");
             }
 
-            if (entity.UserId != userId)
+            if (entity.LandlordId != userId)
             {
                 throw new BusinessException(HttpStatusCode.Forbidden,
                     "Access denied. You do not have permission to edit this property.");
@@ -72,7 +72,7 @@ namespace Rent.Service.Services.Properties
         {
             Property entity = await _uow.PropertyRepository.FindAsync(id);
 
-            if (entity.UserId != userId)
+            if (entity.LandlordId != userId)
             {
                 throw new BusinessException(HttpStatusCode.Forbidden,
                     "Access denied. You do not have permission to delete this property.");

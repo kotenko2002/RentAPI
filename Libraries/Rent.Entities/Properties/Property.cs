@@ -7,7 +7,7 @@ namespace Rent.Entities.Properties
 {
     public class Property : BaseEntity
     {
-        public string UserId { get; set; }
+        public string LandlordId { get; set; }
         public virtual User Landlord { get; set; }
 
         public int? CityId { get; set; }

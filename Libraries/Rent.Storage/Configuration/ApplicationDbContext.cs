@@ -5,7 +5,6 @@ using Rent.Entities.Comments;
 using Rent.Entities.Properties;
 using Rent.Entities.Responses;
 using Rent.Entities.Users;
-using System.Reflection.Emit;
 
 namespace Rent.Storage.Configuration
 {
@@ -31,10 +30,15 @@ namespace Rent.Storage.Configuration
             modelBuilder.Entity<Property>(builder =>
             {
                 builder
+                   .HasOne(p => p.Landlord)
+                   .WithMany(u => u.Properties)
+                   .HasForeignKey(p => p.LandlordId);
+
+                builder
                     .HasOne(p => p.City)
                     .WithMany(c => c.Properties)
                     .HasForeignKey(p => p.CityId)
-                    .OnDelete(DeleteBehavior.SetNull);
+                    .OnDelete(DeleteBehavior.Restrict);
 
                 builder.Property(c => c.Address).IsRequired().HasMaxLength(100);
                 builder.Property(c => c.Description).IsRequired().HasMaxLength(500);
@@ -44,12 +48,32 @@ namespace Rent.Storage.Configuration
 
             modelBuilder.Entity<Response>(builder =>
             {
+                builder
+                    .HasOne(p => p.Tenant)
+                    .WithMany(u => u.Responses)
+                    .HasForeignKey(p => p.TenantId);
+
+                builder
+                   .HasOne(p => p.Property)
+                   .WithMany(u => u.Responses)
+                   .HasForeignKey(p => p.PropertyId);
+
                 builder.Property(c => c.Message).IsRequired().HasMaxLength(400);
                 builder.Property(c => c.Status).IsRequired();
             });
 
             modelBuilder.Entity<Comment>(builder =>
             {
+                builder
+                   .HasOne(p => p.Tenant)
+                   .WithMany(u => u.Comments)
+                   .HasForeignKey(p => p.TenantId);
+
+                builder
+                    .HasOne(p => p.Property)
+                    .WithMany(u => u.Comments)
+                    .HasForeignKey(p => p.PropertyId);
+
                 builder.Property(c => c.Message).IsRequired().HasMaxLength(400);
                 builder.Property(c => c.Rate).IsRequired();
             });

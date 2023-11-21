@@ -36,7 +36,7 @@ namespace Rent.Service.Services.Responses
                 throw new BusinessException(HttpStatusCode.NotFound, "Property not found.");
             }
 
-            if (entity.UserId != landlordId)
+            if (entity.LandlordId != landlordId)
             {
                 throw new BusinessException(HttpStatusCode.Forbidden,
                     "Access denied. You do not have permission to get responses for this property.");

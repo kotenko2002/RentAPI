@@ -32,11 +32,11 @@ namespace RentAPI.Controllers
         public async Task<IActionResult> AddNewProperty([FromForm] AddPropertyModel model)
         {
             var descriptor = _mapper.Map<AddPropertyDescriptor>(model);
-            descriptor.UserId = _httpContextAccessor.HttpContext.User.GetUserId();
+            descriptor.LandlordId = _httpContextAccessor.HttpContext.User.GetUserId();
 
             await _propertyService.Add(descriptor);
 
-            return Ok("added successfully!");
+            return Ok("Added successfully!");
         }
 
         [HttpPatch("edit")]
@@ -47,7 +47,7 @@ namespace RentAPI.Controllers
 
             await _propertyService.Edit(descriptor, userId);
 
-            return Ok("edited successfully!");
+            return Ok("Edited successfully!");
         }
 
         [HttpDelete("{propertyId}")]
@@ -56,7 +56,7 @@ namespace RentAPI.Controllers
             string userId = _httpContextAccessor.HttpContext.User.GetUserId();
             await _propertyService.Delete(propertyId, userId);
 
-            return Ok();
+            return Ok("Deleted successfully!");
         }
     }
 }
