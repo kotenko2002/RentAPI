@@ -1,4 +1,5 @@
 ﻿using Rent.Entities.Responses;
+using Rent.Service.Services.Responses.Descriptors;
 using Rent.Service.Services.Responses.Views;
 
 namespace Rent.Service.Services.Responses
@@ -7,6 +8,6 @@ namespace Rent.Service.Services.Responses
     {
         Task Add(Response entity);
         Task<IEnumerable<ResponseView>> GetAllResponsesByPropertyId(int propertyId, string landlordId);
-        Task Process();
+        Task Process(ProcessResponseDescriptor descriptor);
     }
 }

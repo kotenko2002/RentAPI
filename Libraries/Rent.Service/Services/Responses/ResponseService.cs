@@ -1,7 +1,7 @@
-﻿using AutoMapper;
-using Rent.Common;
+﻿using Rent.Common;
 using Rent.Entities.Properties;
 using Rent.Entities.Responses;
+using Rent.Service.Services.Responses.Descriptors;
 using Rent.Service.Services.Responses.Views;
 using Rent.Storage.Uow;
 using System.Net;
@@ -10,19 +10,16 @@ namespace Rent.Service.Services.Responses
 {
     public class ResponseService : IResponseService
     {
-        private readonly IMapper _mapper;
         private readonly IUnitOfWork _uow;
 
-        public ResponseService(
-            IUnitOfWork uow,
-            IMapper mapper)
+        public ResponseService(IUnitOfWork uow)
         {
             _uow = uow;
-            _mapper = mapper;
         }
 
         public async Task Add(Response entity)
         {
+            entity.Status = ResponseStatus.NotReviewed;
             await _uow.ResponseRepository.AddAsync(entity);
             await _uow.CompleteAsync();
         }
@@ -42,12 +39,30 @@ namespace Rent.Service.Services.Responses
                     "Access denied. You do not have permission to get responses for this property.");
             }
 
-            return _mapper.Map<IEnumerable<ResponseView>>(entity.Responses);
+            IEnumerable<ResponseView> resposes = entity.Responses.Select(res => new ResponseView()
+            {
+                Id = res.Id,
+                Email = res.Tenant.Email,
+                PhoneNumber = res.Tenant.PhoneNumber,
+                Message = res.Message,
+                Status = res.Status
+            }); 
+
+            return resposes;
         }
 
-        public Task Process()
+        public async Task Process(ProcessResponseDescriptor descriptor)
         {
-            throw new NotImplementedException();
+            Response entity = await _uow.ResponseRepository.GetFullResponseById(descriptor.ResponseId);
+
+            if (entity.Property.LandlordId != descriptor.LandlordId)
+            {
+                throw new BusinessException(HttpStatusCode.Forbidden,
+                    "Access denied. You do not have permission to process this response.");
+            }
+
+            entity.Status = descriptor.Status;
+            await _uow.CompleteAsync();
         }
     }
 }

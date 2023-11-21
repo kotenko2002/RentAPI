@@ -5,5 +5,6 @@ namespace Rent.Storage.Repositories.Responses
 {
     public interface IResponseRepository : IBaseRepository<Response>
     {
+        Task<Response> GetFullResponseById(int propertyId);
     }
 }
