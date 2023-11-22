@@ -21,9 +21,9 @@ namespace Rent.Service.Services.Comments
             _uow = uow;
         }
 
-        public async Task Add(Comment entity)
+        public async Task AddAsync(Comment entity)
         {
-            Response response = await _uow.ResponseRepository.GetResponseByPropertyAndTenantIds(
+            Response response = await _uow.ResponseRepository.GetResponseByPropertyAndTenantIdsAsync(
                 entity.PropertyId, entity.TenantId);
 
             if (response == null)
@@ -41,7 +41,7 @@ namespace Rent.Service.Services.Comments
             await _uow.CompleteAsync();
         }
 
-        public async Task Delete(int commentId, string tenantId)
+        public async Task DeleteAsync(int commentId, string tenantId)
         {
             Comment entity = await _uow.CommentRepository.FindAsync(commentId);
 
@@ -55,9 +55,9 @@ namespace Rent.Service.Services.Comments
             await _uow.CompleteAsync();
         }
 
-        public async Task<IEnumerable<CommentView>> GetCommentsByPropertyId(int propertyId)
+        public async Task<IEnumerable<CommentView>> GetCommentsByPropertyIdAsync(int propertyId)
         {
-            IEnumerable<Comment> comments = await _uow.CommentRepository.GetFullCommentsByPropertyId(propertyId);
+            IEnumerable<Comment> comments = await _uow.CommentRepository.GetFullCommentsByPropertyIdAsync(propertyId);
 
             return _mapper.Map<IEnumerable<CommentView>>(comments);
         }

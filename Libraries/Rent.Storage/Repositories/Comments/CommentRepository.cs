@@ -11,7 +11,7 @@ namespace Rent.Storage.Repositories.Comments
         {
         }
 
-        public async Task<IEnumerable<Comment>> GetFullCommentsByPropertyId(int propertyId)
+        public async Task<IEnumerable<Comment>> GetFullCommentsByPropertyIdAsync(int propertyId)
         {
             return await Sourse
                 .Include(c => c.Tenant)

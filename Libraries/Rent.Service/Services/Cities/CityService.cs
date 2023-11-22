@@ -18,7 +18,7 @@ namespace Rent.Service.Services.Cities
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<CityView>> GetAllCities()
+        public async Task<IEnumerable<CityView>> GetAllCitiesAsync()
         {
             IEnumerable<City> cities = await _uow.CityRepository.FindAllAsync();
 

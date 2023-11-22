@@ -6,7 +6,7 @@ namespace Rent.Service.Services.FileStorage
     {
         private readonly string basePath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
 
-        public async Task UploadNewPropertyPhotos(IFormFile[] photos, int propertyId)
+        public async Task UploadNewPropertyPhotosAsync(IFormFile[] photos, int propertyId)
         {
             string propertyDirectoryPath = Path.Combine(basePath, propertyId.ToString());
 

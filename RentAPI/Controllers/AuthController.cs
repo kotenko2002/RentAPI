@@ -9,8 +9,7 @@ using RentAPI.Models.Auth;
 
 namespace RentAPI.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
+    [ApiController, Route("[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -31,7 +30,7 @@ namespace RentAPI.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
             var descriptor = _mapper.Map<RegisterDescriptor>(model);
-            await _authService.Register(descriptor);
+            await _authService.RegisterAsync(descriptor);
 
             return Ok("User created successfully!");
         }
@@ -40,7 +39,7 @@ namespace RentAPI.Controllers
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
             var descriptor = _mapper.Map<LoginDescriptor>(model);
-            TokensPairView tokens = await _authService.Login(descriptor);
+            TokensPairView tokens = await _authService.LoginAsync(descriptor);
 
             return Ok(tokens);
         }
@@ -49,17 +48,16 @@ namespace RentAPI.Controllers
         public async Task<IActionResult> RefreshTokens(RefreshTokensModel model)
         {
             var descriptor = _mapper.Map<RefreshTokensDescriptor>(model);
-            TokensPairView newTokens = await _authService.RefreshTokens(descriptor);
+            TokensPairView newTokens = await _authService.RefreshTokensAsync(descriptor);
 
             return Ok(newTokens);
         }
 
-        [Authorize]
-        [HttpDelete("logout")]
+        [HttpDelete("logout"), Authorize]
         public async Task<IActionResult> Logout()
         {
             string username = _httpContextAccessor.HttpContext.User.GetUsername();
-            await _authService.Logout(username);
+            await _authService.LogoutAsync(username);
 
             return Ok();
         }

@@ -5,8 +5,8 @@ namespace Rent.Service.Services.Comments
 {
     public interface ICommentService
     {
-        Task Add(Comment entity);
-        Task Delete(int commentId, string tenantId);
-        Task<IEnumerable<CommentView>> GetCommentsByPropertyId(int propertyId);
+        Task AddAsync(Comment entity);
+        Task DeleteAsync(int commentId, string tenantId);
+        Task<IEnumerable<CommentView>> GetCommentsByPropertyIdAsync(int propertyId);
     }
 }

@@ -4,9 +4,7 @@ using Rent.Service.Services.Cities;
 
 namespace RentAPI.Controllers
 {
-    [Authorize]
-    [ApiController]
-    [Route("[controller]")]
+    [ApiController, Route("[controller]"), Authorize]
     public class CityController : ControllerBase
     {
         private readonly ICityService _cityService;
@@ -20,7 +18,7 @@ namespace RentAPI.Controllers
         [HttpGet("items")]
         public async Task<IActionResult> GetAllCities()
         {
-            return Ok(await _cityService.GetAllCities());
+            return Ok(await _cityService.GetAllCitiesAsync());
         }
     }
 }

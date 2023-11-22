@@ -6,8 +6,8 @@ namespace Rent.Service.Services.Responses
 {
     public interface IResponseService
     {
-        Task Add(Response entity);
-        Task<IEnumerable<ResponseView>> GetAllResponsesByPropertyId(int propertyId, string landlordId);
-        Task Process(ProcessResponseDescriptor descriptor);
+        Task AddAsync(Response entity);
+        Task<IEnumerable<ResponseView>> GetAllResponsesByPropertyIdAsync(int propertyId, string landlordId);
+        Task ProcessAsync(ProcessResponseDescriptor descriptor);
     }
 }

@@ -9,9 +9,7 @@ using RentAPI.Models.Properties;
 
 namespace RentAPI.Controllers
 {
-    [Authorize(Roles = Roles.Landlord)]
-    [ApiController]
-    [Route("[controller]")]
+    [ApiController, Route("[controller]"), Authorize(Roles = Roles.Landlord)]
     public class PropertyController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -34,7 +32,7 @@ namespace RentAPI.Controllers
             var descriptor = _mapper.Map<AddPropertyDescriptor>(model);
             descriptor.LandlordId = _httpContextAccessor.HttpContext.User.GetUserId();
 
-            await _propertyService.Add(descriptor);
+            await _propertyService.AddAsync(descriptor);
 
             return Ok("Added successfully!");
         }
@@ -45,7 +43,7 @@ namespace RentAPI.Controllers
             var descriptor = _mapper.Map<EditPropertyDescriptor>(model);
             string userId = _httpContextAccessor.HttpContext.User.GetUserId();
 
-            await _propertyService.Edit(descriptor, userId);
+            await _propertyService.EditAsync(descriptor, userId);
 
             return Ok("Edited successfully!");
         }
@@ -54,7 +52,7 @@ namespace RentAPI.Controllers
         public async Task<IActionResult> DeleteProperty(int propertyId)
         {
             string userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            await _propertyService.Delete(propertyId, userId);
+            await _propertyService.DeleteAsync(propertyId, userId);
 
             return Ok("Deleted successfully!");
         }

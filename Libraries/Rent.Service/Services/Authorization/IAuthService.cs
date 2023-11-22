@@ -5,9 +5,9 @@ namespace Rent.Service.Services.Authorization
 {
     public interface IAuthService
     {
-        Task Register(RegisterDescriptor descriptor);
-        Task<TokensPairView> Login(LoginDescriptor descriptor);
-        Task<TokensPairView> RefreshTokens(RefreshTokensDescriptor descriptor);
-        Task Logout(string username);
+        Task RegisterAsync(RegisterDescriptor descriptor);
+        Task<TokensPairView> LoginAsync(LoginDescriptor descriptor);
+        Task<TokensPairView> RefreshTokensAsync(RefreshTokensDescriptor descriptor);
+        Task LogoutAsync(string username);
     }
 }

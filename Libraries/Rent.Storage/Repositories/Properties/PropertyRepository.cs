@@ -11,7 +11,7 @@ namespace Rent.Storage.Repositories.Properties
         {
         }
 
-        public async Task<Property> GetFullPropertyById(int propertyId)
+        public async Task<Property> GetFullPropertyByIdAsync(int propertyId)
         {
             return await Sourse
                 .Include(p => p.Responses)

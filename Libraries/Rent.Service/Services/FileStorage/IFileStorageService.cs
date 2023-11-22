@@ -4,6 +4,6 @@ namespace Rent.Service.Services.FileStorage
 {
     public interface IFileStorageService
     {
-        Task UploadNewPropertyPhotos(IFormFile[] Photos, int propertyId);
+        Task UploadNewPropertyPhotosAsync(IFormFile[] Photos, int propertyId);
     }
 }

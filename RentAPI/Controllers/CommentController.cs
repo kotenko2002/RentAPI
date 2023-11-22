@@ -10,9 +10,7 @@ using RentAPI.Models.Comments;
 
 namespace RentAPI.Controllers
 {
-    [Authorize]
-    [ApiController]
-    [Route("[controller]")]
+    [ApiController, Route("[controller]"), Authorize]
     public class CommentController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -29,33 +27,30 @@ namespace RentAPI.Controllers
             _commentService = commentService;
         }
 
-        [Authorize(Roles = Roles.Tenant)]
-        [HttpPost("add")]
+        [HttpPost("add"), Authorize(Roles = Roles.Tenant)]
         public async Task<IActionResult> AddNewProperty(AddCommentModel model)
         {
             var entity = _mapper.Map<Comment>(model);
             entity.TenantId = _httpContextAccessor.HttpContext.User.GetUserId();
 
-            await _commentService.Add(entity);
+            await _commentService.AddAsync(entity);
 
             return Ok("Added successfully!");
         }
 
-        [Authorize(Roles = Roles.Tenant)]
-        [HttpDelete("{commentId}")]
+        [HttpDelete("{commentId}"), Authorize(Roles = Roles.Tenant)]
         public async Task<IActionResult> DeleteProperty(int commentId)
         {
             string userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            await _commentService.Delete(commentId, userId);
+            await _commentService.DeleteAsync(commentId, userId);
 
             return Ok("Deleted successfully!");
         }
 
-        [Authorize]
         [HttpGet("items/{propertyId}")]
         public async Task<IActionResult> GetCommentsBy(int propertyId)
         {
-            IEnumerable<CommentView> comments = await _commentService.GetCommentsByPropertyId(propertyId);
+            IEnumerable<CommentView> comments = await _commentService.GetCommentsByPropertyIdAsync(propertyId);
 
             return Ok(comments);
         }

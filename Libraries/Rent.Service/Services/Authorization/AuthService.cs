@@ -27,7 +27,7 @@ namespace Rent.Service.Services.Authorization
             _userManager = userManager;
         }
         
-        public async Task Register(RegisterDescriptor descriptor)
+        public async Task RegisterAsync(RegisterDescriptor descriptor)
         {
             User existsUser = await _userManager.FindByNameAsync(descriptor.Username);
             if (existsUser != null)
@@ -53,7 +53,7 @@ namespace Rent.Service.Services.Authorization
             await _userManager.AddToRoleAsync(user, descriptor.Role);
         }
 
-        public async Task<TokensPairView> Login(LoginDescriptor descriptor)
+        public async Task<TokensPairView> LoginAsync(LoginDescriptor descriptor)
         {
             User user = await _userManager.FindByNameAsync(descriptor.Username);
             if (user == null || !await _userManager.CheckPasswordAsync(user, descriptor.Password))
@@ -81,7 +81,7 @@ namespace Rent.Service.Services.Authorization
             return new TokensPairView(accessToken, user);
         }
 
-        public async Task<TokensPairView> RefreshTokens(RefreshTokensDescriptor descriptor)
+        public async Task<TokensPairView> RefreshTokensAsync(RefreshTokensDescriptor descriptor)
         {
             string accessToken = descriptor.AccessToken;
             string refreshToken = descriptor.RefreshToken;
@@ -110,7 +110,7 @@ namespace Rent.Service.Services.Authorization
             return new TokensPairView(newAccessToken, user);
         }
 
-        public async Task Logout(string username)
+        public async Task LogoutAsync(string username)
         {
             User user = await _userManager.FindByNameAsync(username);
             if (user == null)

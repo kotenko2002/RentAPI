@@ -24,18 +24,18 @@ namespace Rent.Service.Services.Properties
             _fileStorageService = fileStorageService;
         }
 
-        public async Task Add(AddPropertyDescriptor descriptor)
+        public async Task AddAsync(AddPropertyDescriptor descriptor)
         {
             var entity = _mapper.Map<Property>(descriptor);
 
             await _uow.PropertyRepository.AddAsync(entity);
             await _uow.CompleteAsync();
 
-            await _fileStorageService.UploadNewPropertyPhotos(descriptor.Photos, entity.Id);
+            await _fileStorageService.UploadNewPropertyPhotosAsync(descriptor.Photos, entity.Id);
             //add files
         }
 
-        public async Task Edit(EditPropertyDescriptor descriptor, string userId)
+        public async Task EditAsync(EditPropertyDescriptor descriptor, string userId)
         {
             Property entity = await _uow.PropertyRepository.FindAsync(descriptor.Id);
 
@@ -68,7 +68,7 @@ namespace Rent.Service.Services.Properties
             await _uow.CompleteAsync();
         }
 
-        public async Task Delete(int id, string userId)
+        public async Task DeleteAsync(int id, string userId)
         {
             Property entity = await _uow.PropertyRepository.FindAsync(id);
 

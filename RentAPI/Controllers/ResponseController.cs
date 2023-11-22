@@ -10,9 +10,7 @@ using RentAPI.Models.Responses;
 
 namespace RentAPI.Controllers
 {
-    [Authorize]
-    [ApiController]
-    [Route("[controller]")]
+    [ApiController, Route("[controller]"), Authorize]
     public class ResponseController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -29,37 +27,34 @@ namespace RentAPI.Controllers
             _responseService = responseService;
         }
 
-        [Authorize(Roles = Roles.Tenant)]
-        [HttpPost("add")]
+        [HttpPost("add"), Authorize(Roles = Roles.Tenant)]
         public async Task<IActionResult> AddNewResponse(AddResponseModel model)
         {
             var entity = _mapper.Map<Response>(model);
             entity.TenantId = _httpContextAccessor.HttpContext.User.GetUserId();
 
-            await _responseService.Add(entity);
+            await _responseService.AddAsync(entity);
 
             return Ok("Added successfully!");
         }
 
-        [Authorize(Roles = Roles.Landlord)]
-        [HttpGet("items/{propertyId}")]
+        [HttpGet("items/{propertyId}"), Authorize(Roles = Roles.Landlord)]
         public async Task<IActionResult> GetResponseByPropertyId(int propertyId)
         {
             string landlordId = _httpContextAccessor.HttpContext.User.GetUserId();
 
-            var responses = await _responseService.GetAllResponsesByPropertyId(propertyId, landlordId);
+            var responses = await _responseService.GetAllResponsesByPropertyIdAsync(propertyId, landlordId);
 
             return Ok(responses);
         }
 
-        [Authorize(Roles = Roles.Landlord)]
-        [HttpPatch("process")]
+        [HttpPatch("process"), Authorize(Roles = Roles.Landlord)]
         public async Task<IActionResult> Process(ProcessResponseModel model)
         {
             var descriptor = _mapper.Map<ProcessResponseDescriptor>(model);
             descriptor.LandlordId = _httpContextAccessor.HttpContext.User.GetUserId();
 
-            await _responseService.Process(descriptor);
+            await _responseService.ProcessAsync(descriptor);
 
             return Ok("Status updated successfully!");
         }

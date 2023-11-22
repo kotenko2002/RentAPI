@@ -17,16 +17,16 @@ namespace Rent.Service.Services.Responses
             _uow = uow;
         }
 
-        public async Task Add(Response entity)
+        public async Task AddAsync(Response entity)
         {
             entity.Status = ResponseStatus.NotReviewed;
             await _uow.ResponseRepository.AddAsync(entity);
             await _uow.CompleteAsync();
         }
 
-        public async Task<IEnumerable<ResponseView>> GetAllResponsesByPropertyId(int propertyId, string landlordId)
+        public async Task<IEnumerable<ResponseView>> GetAllResponsesByPropertyIdAsync(int propertyId, string landlordId)
         {
-            Property entity = await _uow.PropertyRepository.GetFullPropertyById(propertyId);
+            Property entity = await _uow.PropertyRepository.GetFullPropertyByIdAsync(propertyId);
 
             if (entity == null)
             {
@@ -51,9 +51,9 @@ namespace Rent.Service.Services.Responses
             return resposes;
         }
 
-        public async Task Process(ProcessResponseDescriptor descriptor)
+        public async Task ProcessAsync(ProcessResponseDescriptor descriptor)
         {
-            Response entity = await _uow.ResponseRepository.GetFullResponseById(descriptor.ResponseId);
+            Response entity = await _uow.ResponseRepository.GetFullResponseByIdAsync(descriptor.ResponseId);
 
             if (entity.Property.LandlordId != descriptor.LandlordId)
             {

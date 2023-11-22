@@ -5,6 +5,6 @@ namespace Rent.Service.Services.Cities
 {
     public interface ICityService
     {
-        Task<IEnumerable<CityView>> GetAllCities();
+        Task<IEnumerable<CityView>> GetAllCitiesAsync();
     }
 }

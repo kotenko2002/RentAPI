@@ -11,14 +11,14 @@ namespace Rent.Storage.Repositories.Responses
         {
         }
 
-        public async Task<Response> GetFullResponseById(int propertyId)
+        public async Task<Response> GetFullResponseByIdAsync(int propertyId)
         {
             return await Sourse
                 .Include(r => r.Property)
                 .FirstOrDefaultAsync(r => r.Id == propertyId);
         }
 
-        public async Task<Response> GetResponseByPropertyAndTenantIds(int propertyId, string tenantId)
+        public async Task<Response> GetResponseByPropertyAndTenantIdsAsync(int propertyId, string tenantId)
         {
             return await Sourse
              .FirstOrDefaultAsync(r => r.PropertyId == propertyId && r.TenantId == tenantId);
