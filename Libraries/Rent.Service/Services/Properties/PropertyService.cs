@@ -3,6 +3,7 @@ using Rent.Common;
 using Rent.Entities.Properties;
 using Rent.Service.Services.FileStorage;
 using Rent.Service.Services.Properties.Descriptors;
+using Rent.Service.Services.Properties.Views;
 using Rent.Storage.Uow;
 using System.Net;
 
@@ -66,6 +67,25 @@ namespace Rent.Service.Services.Properties
                 entity.Status = (PropertyStatus)descriptor.Status;
 
             await _uow.CompleteAsync();
+        }
+
+        public async Task<IEnumerable<PropertyView>> GetPropertiesByCityIdAsync(int cityId)
+        {
+            IEnumerable<Property> properties = await _uow.PropertyRepository.GetPropertiesByCityIdAsync(cityId);
+
+            return _mapper.Map<IEnumerable<PropertyView>>(properties);
+        }
+
+        public async Task<IEnumerable<PropertyView>> GetPropertiesByLandlordId(string landlordId)
+        {
+            IEnumerable<Property> properties = await _uow.PropertyRepository.GetPropertiesByLandlordIdAsync(landlordId);
+
+            return _mapper.Map<IEnumerable<PropertyView>>(properties);
+        }
+
+        public Task<PropertyDetailView> GetFullInfoByIdAsync(int propertyId)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task DeleteAsync(int id, string userId)

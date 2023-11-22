@@ -4,12 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Rent.Entities.Users;
 using Rent.Service.Services.Properties;
 using Rent.Service.Services.Properties.Descriptors;
+using Rent.Service.Services.Properties.Views;
 using RentAPI.Infrastructure.Extensions;
 using RentAPI.Models.Properties;
 
 namespace RentAPI.Controllers
 {
-    [ApiController, Route("[controller]"), Authorize(Roles = Roles.Landlord)]
+    [ApiController, Route("[controller]"), Authorize]
     public class PropertyController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -26,7 +27,7 @@ namespace RentAPI.Controllers
             _propertyService = propertyService;
         }
 
-        [HttpPost("add")]
+        [HttpPost("add"), Authorize(Roles = Roles.Landlord)]
         public async Task<IActionResult> AddNewProperty([FromForm] AddPropertyModel model)
         {
             var descriptor = _mapper.Map<AddPropertyDescriptor>(model);
@@ -37,7 +38,7 @@ namespace RentAPI.Controllers
             return Ok("Added successfully!");
         }
 
-        [HttpPatch("edit")]
+        [HttpPatch("edit"), Authorize(Roles = Roles.Landlord)]
         public async Task<IActionResult> EditProperty(EditPropertyModel model)
         {
             var descriptor = _mapper.Map<EditPropertyDescriptor>(model);
@@ -48,7 +49,30 @@ namespace RentAPI.Controllers
             return Ok("Edited successfully!");
         }
 
-        [HttpDelete("{propertyId}")]
+        [HttpGet("items/{cityId}"), Authorize(Roles = Roles.Tenant)]
+        public async Task<IActionResult> GetPropertiesByCityId(int cityId)
+        {
+            IEnumerable<PropertyView> views = await _propertyService.GetPropertiesByCityIdAsync(cityId);
+
+            return Ok(views);
+        }
+
+        [HttpGet("items"), Authorize(Roles = Roles.Landlord)]
+        public async Task<IActionResult> GetPropertiesByLandlordId()
+        {
+            string userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            IEnumerable<PropertyView> views = await _propertyService.GetPropertiesByLandlordId(userId);
+
+            return Ok(views);
+        }
+
+        [HttpGet("item/{propertyId}")]
+        public async Task<IActionResult> GetPropertyFullInfoByIdAsync(int propertyId)
+        {
+            return Ok(await _propertyService.GetFullInfoByIdAsync(propertyId));
+        }
+
+        [HttpDelete("{propertyId}"), Authorize(Roles = Roles.Landlord)]
         public async Task<IActionResult> DeleteProperty(int propertyId)
         {
             string userId = _httpContextAccessor.HttpContext.User.GetUserId();

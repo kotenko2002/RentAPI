@@ -38,6 +38,14 @@ namespace RentAPI.Controllers
             return Ok("Added successfully!");
         }
 
+        [HttpGet("items/{propertyId}")]
+        public async Task<IActionResult> GetCommentsBy(int propertyId)
+        {
+            IEnumerable<CommentView> comments = await _commentService.GetCommentsByPropertyIdAsync(propertyId);
+
+            return Ok(comments);
+        }
+
         [HttpDelete("{commentId}"), Authorize(Roles = Roles.Tenant)]
         public async Task<IActionResult> DeleteProperty(int commentId)
         {
@@ -45,14 +53,6 @@ namespace RentAPI.Controllers
             await _commentService.DeleteAsync(commentId, userId);
 
             return Ok("Deleted successfully!");
-        }
-
-        [HttpGet("items/{propertyId}")]
-        public async Task<IActionResult> GetCommentsBy(int propertyId)
-        {
-            IEnumerable<CommentView> comments = await _commentService.GetCommentsByPropertyIdAsync(propertyId);
-
-            return Ok(comments);
         }
     }
 }
