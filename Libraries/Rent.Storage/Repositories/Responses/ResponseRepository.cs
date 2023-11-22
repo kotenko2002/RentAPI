@@ -17,5 +17,11 @@ namespace Rent.Storage.Repositories.Responses
                 .Include(r => r.Property)
                 .FirstOrDefaultAsync(r => r.Id == propertyId);
         }
+
+        public async Task<Response> GetResponseByPropertyAndTenantIds(int propertyId, string tenantId)
+        {
+            return await Sourse
+             .FirstOrDefaultAsync(r => r.PropertyId == propertyId && r.TenantId == tenantId);
+        }
     }
 }

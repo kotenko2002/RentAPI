@@ -1,5 +1,6 @@
 ﻿using Rent.Service.Services.Authorization;
 using Rent.Service.Services.Cities;
+using Rent.Service.Services.Comments;
 using Rent.Service.Services.FileStorage;
 using Rent.Service.Services.Properties;
 using Rent.Service.Services.Responses;
@@ -21,7 +22,8 @@ namespace RentAPI.Infrastructure.Extensions
             services.AddScoped<ICityService, CityService>();
             services.AddScoped<IPropertyService, PropertyService>();
             services.AddScoped<IResponseService, ResponseService>();
-            
+            services.AddScoped<ICommentService, CommentService>();
+
             services.AddScoped<IFileStorageService, ServerStorage>();
         }
 

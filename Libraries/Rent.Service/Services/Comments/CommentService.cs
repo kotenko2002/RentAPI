@@ -1,0 +1,65 @@
+﻿using AutoMapper;
+using Rent.Common;
+using Rent.Entities.Comments;
+using Rent.Entities.Responses;
+using Rent.Service.Services.Comments.Views;
+using Rent.Storage.Uow;
+using System.Net;
+
+namespace Rent.Service.Services.Comments
+{
+    public class CommentService : ICommentService
+    {
+        private readonly IMapper _mapper;
+        private readonly IUnitOfWork _uow;
+
+        public CommentService(
+            IMapper mapper,
+            IUnitOfWork uow)
+        {
+            _mapper = mapper;
+            _uow = uow;
+        }
+
+        public async Task Add(Comment entity)
+        {
+            Response response = await _uow.ResponseRepository.GetResponseByPropertyAndTenantIds(
+                entity.PropertyId, entity.TenantId);
+
+            if (response == null)
+            {
+                throw new BusinessException(HttpStatusCode.NotFound, "Property not found.");
+            }
+
+            if (response.Status != ResponseStatus.ApprovedToRent)
+            {
+                throw new BusinessException(HttpStatusCode.Forbidden,
+                    "Access denied. You do not have permission to comment this property.");
+            }
+
+            await _uow.CommentRepository.AddAsync(entity);
+            await _uow.CompleteAsync();
+        }
+
+        public async Task Delete(int commentId, string tenantId)
+        {
+            Comment entity = await _uow.CommentRepository.FindAsync(commentId);
+
+            if (entity.TenantId != tenantId)
+            {
+                throw new BusinessException(HttpStatusCode.Forbidden,
+                    "Access denied. You do not have permission to delete this comment.");
+            }
+
+            await _uow.CommentRepository.RemoveAsync(entity);
+            await _uow.CompleteAsync();
+        }
+
+        public async Task<IEnumerable<CommentView>> GetCommentsByPropertyId(int propertyId)
+        {
+            IEnumerable<Comment> comments = await _uow.CommentRepository.GetFullCommentsByPropertyId(propertyId);
+
+            return _mapper.Map<IEnumerable<CommentView>>(comments);
+        }
+    }
+}

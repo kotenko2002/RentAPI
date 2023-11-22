@@ -1,13 +1,16 @@
 ﻿using AutoMapper;
 using Rent.Entities.Cities;
+using Rent.Entities.Comments;
 using Rent.Entities.Properties;
 using Rent.Entities.Responses;
 using Rent.Service.Services.Authorization.Descriptors;
 using Rent.Service.Services.Cities.Views;
+using Rent.Service.Services.Comments.Views;
 using Rent.Service.Services.Properties.Descriptors;
 using Rent.Service.Services.Responses.Descriptors;
 using Rent.Service.Services.Responses.Views;
 using RentAPI.Models.Auth;
+using RentAPI.Models.Comments;
 using RentAPI.Models.Properties;
 using RentAPI.Models.Responses;
 
@@ -24,12 +27,14 @@ namespace RentAPI.Infrastructure.Mapper
             CreateMap<AddPropertyModel, AddPropertyDescriptor>();
             CreateMap<ProcessResponseModel, ProcessResponseDescriptor>();
 
-            CreateMap<AddResponseModel, Response>();//del?
+            CreateMap<AddResponseModel, Response>();
+            CreateMap<AddCommentModel, Comment>();
 
             CreateMap<AddPropertyDescriptor, Property>(); 
 
             CreateMap<City, CityView>();
             CreateMap<Response, ResponseView>();
+            CreateMap<Comment, CommentView>();
         }
     }
 }
