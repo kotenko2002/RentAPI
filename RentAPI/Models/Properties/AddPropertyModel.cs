@@ -1,5 +1,4 @@
-﻿using Rent.Entities.Properties;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace RentAPI.Models.Properties
 {
@@ -19,9 +18,6 @@ namespace RentAPI.Models.Properties
         [Required]
         [Range(1, int.MaxValue)]
         public int? Price { get; set; }
-
-        [Required]
-        public PropertyStatus Status { get; set; }
 
         [Required]
         public IFormFile[] Photos { get; set; }

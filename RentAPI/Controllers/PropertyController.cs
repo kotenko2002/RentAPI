@@ -44,7 +44,7 @@ namespace RentAPI.Controllers
         }
 
         [HttpPatch("edit"), Authorize(Roles = Roles.Landlord)]
-        public async Task<IActionResult> EditProperty(EditPropertyModel model)
+        public async Task<IActionResult> EditProperty([FromForm] EditPropertyModel model)
         {
             var descriptor = _mapper.Map<EditPropertyDescriptor>(model);
             string userId = _httpContextAccessor.HttpContext.User.GetUserId();

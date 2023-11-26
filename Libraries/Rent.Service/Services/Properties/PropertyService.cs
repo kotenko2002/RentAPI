@@ -36,6 +36,8 @@ namespace Rent.Service.Services.Properties
             }
 
             var property = _mapper.Map<Property>(descriptor);
+            property.Status = PropertyStatus.Available;
+
             await _uow.PropertyRepository.AddAsync(property);
             await _uow.CompleteAsync();
 
@@ -52,33 +54,58 @@ namespace Rent.Service.Services.Properties
 
         public async Task EditAsync(EditPropertyDescriptor descriptor, string userId)
         {
-            Property entity = await _uow.PropertyRepository.FindAsync(descriptor.Id);
+            Property property = await _uow.PropertyRepository.FindAsync(descriptor.Id);
 
-            if(entity == null)
+            if(property == null)
             {
                 throw new BusinessException(HttpStatusCode.NotFound, "Property not found.");
             }
 
-            if (entity.LandlordId != userId)
+            if (property.LandlordId != userId)
             {
                 throw new BusinessException(HttpStatusCode.Forbidden,
                     "Access denied. You do not have permission to edit this property.");
             }
 
             if (descriptor.CityId.HasValue)
-                entity.CityId = descriptor.CityId;
+                property.CityId = descriptor.CityId;
 
             if (!string.IsNullOrEmpty(descriptor.Address))
-                entity.Address = descriptor.Address;
+                property.Address = descriptor.Address;
 
             if (!string.IsNullOrEmpty(descriptor.Description))
-                entity.Description = descriptor.Description;
+                property.Description = descriptor.Description;
 
             if (descriptor.Price.HasValue)
-                entity.Price = (int)descriptor.Price;
+                property.Price = (int)descriptor.Price;
 
             if (descriptor.Status.HasValue)
-                entity.Status = (PropertyStatus)descriptor.Status;
+                property.Status = (PropertyStatus)descriptor.Status;
+
+            if (descriptor.PhotoIdsToDelete.Any())
+            {
+                IEnumerable<Photo> photos = await _uow.PhotoRepository.GetPhotosByIds(descriptor.PhotoIdsToDelete);
+                if(descriptor.PhotoIdsToDelete.Length != photos.Count())
+                {
+                    throw new BusinessException(HttpStatusCode.NotFound, "Photo not found.");
+                }
+
+                await _uow.PhotoRepository.RemoveRangeAsync(photos);
+
+                await _fileStorageService.DeleteFilesAsync(descriptor.PhotoIdsToDelete);
+            }
+
+            if (descriptor.Photos.Any())
+            {
+                IEnumerable<string> fileIds = await _fileStorageService.UploadFilesAsync(descriptor.Photos);
+
+                var files = fileIds.Select(fileId => new Photo()
+                {
+                    Id = fileId,
+                    PropertyId = property.Id
+                });
+                await _uow.PhotoRepository.AddRangeAsync(files);
+            }
 
             await _uow.CompleteAsync();
         }
@@ -104,16 +131,25 @@ namespace Rent.Service.Services.Properties
 
         public async Task DeleteAsync(int id, string userId)
         {
-            Property entity = await _uow.PropertyRepository.FindAsync(id);
+            Property property = await _uow.PropertyRepository.GetFullPropertyByIdAsync(id);
 
-            if (entity.LandlordId != userId)
+            if (property == null)
+            {
+                throw new BusinessException(HttpStatusCode.NotFound, "Property not found.");
+            }
+
+            if (property.LandlordId != userId)
             {
                 throw new BusinessException(HttpStatusCode.Forbidden,
                     "Access denied. You do not have permission to delete this property.");
             }
 
-            await _uow.PropertyRepository.RemoveAsync(entity);
+            var fileIdsToDelete = property.Photos.Select(p => p.Id).ToArray();
+
+            await _uow.PropertyRepository.RemoveAsync(property);
             await _uow.CompleteAsync();
+
+            await _fileStorageService.DeleteFilesAsync(fileIdsToDelete);
         }
     }
 }

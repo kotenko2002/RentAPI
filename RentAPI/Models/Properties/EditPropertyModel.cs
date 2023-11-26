@@ -20,5 +20,8 @@ namespace RentAPI.Models.Properties
         public int? Price { get; set; }
 
         public PropertyStatus? Status { get; set; }
+
+        public IFormFile[] Photos { get; set; }
+        public string[] PhotoIdsToDelete { get; set; }
     }
 }

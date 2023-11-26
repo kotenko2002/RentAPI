@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Rent.Entities.Cities;
 using Rent.Entities.Properties;
 using Rent.Storage.Configuration;
 using Rent.Storage.Configuration.BaseRepository;
@@ -17,6 +16,7 @@ namespace Rent.Storage.Repositories.Properties
             return await Sourse
                 .Include(p => p.Responses)
                     .ThenInclude(r => r.Tenant)
+                .Include(p => p.Photos)
                 .FirstOrDefaultAsync(p => p.Id == propertyId);
         }
 
