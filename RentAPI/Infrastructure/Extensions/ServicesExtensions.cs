@@ -24,7 +24,7 @@ namespace RentAPI.Infrastructure.Extensions
             services.AddScoped<IResponseService, ResponseService>();
             services.AddScoped<ICommentService, CommentService>();
 
-            services.AddScoped<IFileStorageService, ServerStorage>();
+            services.AddScoped<IFileStorageService, GoogleDrive>();
         }
 
         public static void AddRepositories(this IServiceCollection repositories)

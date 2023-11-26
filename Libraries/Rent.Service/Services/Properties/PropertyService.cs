@@ -32,7 +32,7 @@ namespace Rent.Service.Services.Properties
             await _uow.PropertyRepository.AddAsync(entity);
             await _uow.CompleteAsync();
 
-            await _fileStorageService.UploadNewPropertyPhotosAsync(descriptor.Photos, entity.Id);
+            //await _fileStorageService.UploadNewPropertyPhotosAsync(descriptor.Photos, entity.Id);
             //add files
         }
 

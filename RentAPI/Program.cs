@@ -15,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 ConfigurationManager configuration = builder.Configuration;
 builder.Services.Configure<JwtOptions>(configuration.GetSection("JWT"));
+builder.Services.Configure<GoogleDriveConfig>(configuration.GetSection("GoogleDrive"));
 
 #region Database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
