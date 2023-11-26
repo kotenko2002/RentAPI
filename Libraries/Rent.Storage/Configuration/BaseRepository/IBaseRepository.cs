@@ -2,7 +2,7 @@
 
 namespace Rent.Storage.Configuration.BaseRepository
 {
-    public interface IBaseRepository<TEntity> where TEntity : BaseEntity
+    public interface IBaseRepository<TEntity> where TEntity : class
     {
         Task AddAsync(TEntity entity);
         Task AddRangeAsync(IEnumerable<TEntity> entities);

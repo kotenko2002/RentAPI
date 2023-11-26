@@ -1,6 +1,6 @@
 ﻿namespace Rent.Service.Configuration
 {
-    public class JwtOptions
+    public class JwtConfig
     {
         public string Secret { get; set; }
         public string ValidIssuer { get; set; }

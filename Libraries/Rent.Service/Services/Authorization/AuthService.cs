@@ -16,14 +16,14 @@ namespace Rent.Service.Services.Authorization
 {
     public class AuthService : IAuthService
     {
-        private readonly JwtOptions _jwtOptions;
+        private readonly JwtConfig _config;
         private readonly UserManager<User> _userManager;
 
         public AuthService(
-            IOptions<JwtOptions> jwtOptions,
+            IOptions<JwtConfig> jwtOptions,
             UserManager<User> userManager)
         {
-            _jwtOptions = jwtOptions.Value;
+            _config = jwtOptions.Value;
             _userManager = userManager;
         }
         
@@ -75,7 +75,7 @@ namespace Rent.Service.Services.Authorization
             string refreshToken = GenerateRefreshToken();
 
             user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(_jwtOptions.RefreshTokenValidityInDays);
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(_config.RefreshTokenValidityInDays);
             await _userManager.UpdateAsync(user);
 
             return new TokensPairView(accessToken, user);
@@ -104,7 +104,7 @@ namespace Rent.Service.Services.Authorization
             string newRefreshToken = GenerateRefreshToken();
 
             user.RefreshToken = newRefreshToken;
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(_jwtOptions.RefreshTokenValidityInDays);
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(_config.RefreshTokenValidityInDays);
             await _userManager.UpdateAsync(user);
 
             return new TokensPairView(newAccessToken, user);
@@ -124,12 +124,12 @@ namespace Rent.Service.Services.Authorization
 
         private JwtSecurityToken GenerateAccessToken(List<Claim> authClaims)
         {
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Secret));
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.Secret));
 
             return new JwtSecurityToken(
-                issuer: _jwtOptions.ValidIssuer,
-                audience: _jwtOptions.ValidAudience,
-                expires: DateTime.Now.AddMinutes(_jwtOptions.TokenValidityInMinutes),
+                issuer: _config.ValidIssuer,
+                audience: _config.ValidAudience,
+                expires: DateTime.Now.AddMinutes(_config.TokenValidityInMinutes),
                 claims: authClaims,
                 signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
             );
@@ -148,7 +148,7 @@ namespace Rent.Service.Services.Authorization
                 ValidateAudience = false,
                 ValidateIssuer = false,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Secret)),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.Secret)),
                 ValidateLifetime = false
             };
 

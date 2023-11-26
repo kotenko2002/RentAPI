@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Rent.Common;
+using Rent.Entities.Cities;
+using Rent.Entities.Photos;
 using Rent.Entities.Properties;
 using Rent.Service.Services.FileStorage;
 using Rent.Service.Services.Properties.Descriptors;
@@ -27,13 +29,25 @@ namespace Rent.Service.Services.Properties
 
         public async Task AddAsync(AddPropertyDescriptor descriptor)
         {
-            var entity = _mapper.Map<Property>(descriptor);
+            City city = await _uow.CityRepository.FindAsync(descriptor.CityId);
+            if(city == null)
+            {
+                throw new BusinessException(HttpStatusCode.NotFound, "City not found.");
+            }
 
-            await _uow.PropertyRepository.AddAsync(entity);
+            var property = _mapper.Map<Property>(descriptor);
+            await _uow.PropertyRepository.AddAsync(property);
             await _uow.CompleteAsync();
 
-            //await _fileStorageService.UploadNewPropertyPhotosAsync(descriptor.Photos, entity.Id);
-            //add files
+            IEnumerable<string> fileIds = await _fileStorageService.UploadFilesAsync(descriptor.Photos);
+
+            var files = fileIds.Select(fileId => new Photo()
+            {
+                Id = fileId,
+                PropertyId = property.Id
+            });
+            await _uow.PhotoRepository.AddRangeAsync(files);
+            await _uow.CompleteAsync();
         }
 
         public async Task EditAsync(EditPropertyDescriptor descriptor, string userId)

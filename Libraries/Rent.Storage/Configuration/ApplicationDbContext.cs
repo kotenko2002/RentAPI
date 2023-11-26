@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Rent.Entities.Cities;
 using Rent.Entities.Comments;
+using Rent.Entities.Photos;
 using Rent.Entities.Properties;
 using Rent.Entities.Responses;
 using Rent.Entities.Users;
@@ -12,9 +13,9 @@ namespace Rent.Storage.Configuration
     {
         public DbSet<City> Cities { get; set; }
         public DbSet<Property> Properties { get; set; }
+        public DbSet<Photo> Photos { get; set; }
         public DbSet<Response> Responses { get; set; }
         public DbSet<Comment> Comments { get; set; }
-
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
@@ -44,6 +45,16 @@ namespace Rent.Storage.Configuration
                 builder.Property(c => c.Description).IsRequired().HasMaxLength(500);
                 builder.Property(c => c.Price).IsRequired();
                 builder.Property(c => c.Status).IsRequired();
+            });
+
+            modelBuilder.Entity<Photo>(builder =>
+            {
+                builder.Property(p => p.Id).ValueGeneratedNever();
+
+                builder
+                    .HasOne(p => p.Property)
+                    .WithMany(p => p.Photos)
+                    .HasForeignKey(p => p.PropertyId);
             });
 
             modelBuilder.Entity<Response>(builder =>

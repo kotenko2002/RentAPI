@@ -30,6 +30,11 @@ namespace RentAPI.Controllers
         [HttpPost("add"), Authorize(Roles = Roles.Landlord)]
         public async Task<IActionResult> AddNewProperty([FromForm] AddPropertyModel model)
         {
+            if (model.Photos.Any(photo => !photo.IsPhoto()))
+            {
+                return BadRequest("An unsupported file type was detected");
+            }
+
             var descriptor = _mapper.Map<AddPropertyDescriptor>(model);
             descriptor.LandlordId = _httpContextAccessor.HttpContext.User.GetUserId();
 

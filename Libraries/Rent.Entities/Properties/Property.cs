@@ -1,5 +1,6 @@
 ﻿using Rent.Entities.Cities;
 using Rent.Entities.Comments;
+using Rent.Entities.Photos;
 using Rent.Entities.Responses;
 using Rent.Entities.Users;
 
@@ -18,6 +19,7 @@ namespace Rent.Entities.Properties
         public int Price { get; set; }
         public PropertyStatus Status { get; set; }
 
+        public virtual ICollection<Photo> Photos { get; set; }
         public virtual ICollection<Response> Responses { get; set; }
         public virtual ICollection<Comment> Comments { get; set; }
     }

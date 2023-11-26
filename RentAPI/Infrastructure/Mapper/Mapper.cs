@@ -31,7 +31,8 @@ namespace RentAPI.Infrastructure.Mapper
             CreateMap<AddResponseModel, Response>();
             CreateMap<AddCommentModel, Comment>();
 
-            CreateMap<AddPropertyDescriptor, Property>(); 
+            CreateMap<AddPropertyDescriptor, Property>()
+                .ForMember(dest => dest.Photos, opt => opt.Ignore());
 
             CreateMap<City, CityView>();
             CreateMap<Response, ResponseView>();

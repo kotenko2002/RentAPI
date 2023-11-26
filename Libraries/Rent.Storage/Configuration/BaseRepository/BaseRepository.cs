@@ -3,7 +3,7 @@ using Rent.Entities;
 
 namespace Rent.Storage.Configuration.BaseRepository
 {
-    public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : BaseEntity
+    public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class
     {
         protected ApplicationDbContext _context;
         protected DbSet<TEntity> Sourse;

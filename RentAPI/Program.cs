@@ -14,7 +14,7 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 ConfigurationManager configuration = builder.Configuration;
-builder.Services.Configure<JwtOptions>(configuration.GetSection("JWT"));
+builder.Services.Configure<JwtConfig>(configuration.GetSection("JWT"));
 builder.Services.Configure<GoogleDriveConfig>(configuration.GetSection("GoogleDrive"));
 
 #region Database
