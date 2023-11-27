@@ -26,12 +26,7 @@ namespace Rent.Service.Services.Comments
             Response response = await _uow.ResponseRepository.GetResponseByPropertyAndTenantIdsAsync(
                 entity.PropertyId, entity.TenantId);
 
-            if (response == null)
-            {
-                throw new BusinessException(HttpStatusCode.NotFound, "Property not found.");
-            }
-
-            if (response.Status != ResponseStatus.ApprovedToRent)
+            if (response == null || response.Status != ResponseStatus.ApprovedToRent)
             {
                 throw new BusinessException(HttpStatusCode.Forbidden,
                     "Access denied. You do not have permission to comment this property.");
@@ -43,7 +38,12 @@ namespace Rent.Service.Services.Comments
 
         public async Task DeleteAsync(int commentId, string tenantId)
         {
-            Comment entity = await _uow.CommentRepository.FindAsync(commentId);
+            Comment entity = await _uow.CommentRepository.GetFullCommentByIdAsync(commentId);
+
+            if (entity == null)
+            {
+                throw new BusinessException(HttpStatusCode.NotFound, "Comment not found.");
+            }
 
             if (entity.TenantId != tenantId)
             {

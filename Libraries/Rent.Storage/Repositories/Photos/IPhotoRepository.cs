@@ -6,5 +6,6 @@ namespace Rent.Storage.Repositories.Photos
     public interface IPhotoRepository : IBaseRepository<Photo>
     {
         Task<IEnumerable<Photo>> GetPhotosByIds(string[] ids);
+        Task<IEnumerable<Photo>> GetFirstPhotoByPropertyIds(int[] propertyIds);
     }
 }

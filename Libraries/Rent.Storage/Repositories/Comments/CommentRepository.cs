@@ -18,5 +18,11 @@ namespace Rent.Storage.Repositories.Comments
                 .Where(c => c.PropertyId == propertyId)
                 .ToListAsync();
         }
+        public async Task<Comment> GetFullCommentByIdAsync(int id)
+        {
+            return await Sourse
+                .Include(c => c.Tenant)
+                .FirstOrDefaultAsync(c => c.Id == id);
+        }
     }
 }

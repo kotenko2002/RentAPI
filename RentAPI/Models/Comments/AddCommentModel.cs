@@ -6,9 +6,6 @@ namespace RentAPI.Models.Comments
     public class AddCommentModel
     {
         [Required]
-        public string TenantId { get; set; }
-
-        [Required]
         public int? PropertyId { get; set; }
 
         [Required]

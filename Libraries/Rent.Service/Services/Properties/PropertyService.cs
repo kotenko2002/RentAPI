@@ -112,21 +112,44 @@ namespace Rent.Service.Services.Properties
 
         public async Task<IEnumerable<PropertyView>> GetPropertiesByCityIdAsync(int cityId)
         {
+            City city = await _uow.CityRepository.FindAsync(cityId);
+            if (city == null)
+            {
+                throw new BusinessException(HttpStatusCode.NotFound, "City not found.");
+            }
+
             IEnumerable<Property> properties = await _uow.PropertyRepository.GetPropertiesByCityIdAsync(cityId);
 
-            return _mapper.Map<IEnumerable<PropertyView>>(properties);
+            return CreatePropertyViews(properties, city.Name);
         }
 
         public async Task<IEnumerable<PropertyView>> GetPropertiesByLandlordId(string landlordId)
         {
             IEnumerable<Property> properties = await _uow.PropertyRepository.GetPropertiesByLandlordIdAsync(landlordId);
 
-            return _mapper.Map<IEnumerable<PropertyView>>(properties);
+            return CreatePropertyViews(properties);
         }
 
-        public Task<PropertyDetailView> GetFullInfoByIdAsync(int propertyId)
+        public async Task<PropertyDetailView> GetFullInfoByIdAsync(int propertyId)
         {
-            throw new NotImplementedException();
+            Property property = await _uow.PropertyRepository.GetFullPropertyByIdAsync(propertyId);
+
+            PhotoView[] photos = property.Photos.Select(photo => new PhotoView()
+            {
+                Id = photo.Id,
+                Url = $"https://drive.google.com/uc?id={photo.Id}"
+            }).ToArray();
+
+            return new PropertyDetailView()
+            {
+                Id = property.Id,
+                CityId = (int)property.CityId,
+                CityName = property.City.Name,
+                Address = property.Address,
+                Description = property.Description,
+                Price = property.Price,
+                Photos = photos,
+            };
         }
 
         public async Task DeleteAsync(int id, string userId)
@@ -150,6 +173,24 @@ namespace Rent.Service.Services.Properties
             await _uow.CompleteAsync();
 
             await _fileStorageService.DeleteFilesAsync(fileIdsToDelete);
+        }
+
+        private IEnumerable<PropertyView> CreatePropertyViews(IEnumerable<Property> properties, string cityName = null)
+        {
+            return properties.Select(prop =>
+            {
+                string photoId = prop.Photos.FirstOrDefault()?.Id;
+                string photoUrl = photoId == null ? null : $"https://drive.google.com/uc?id={photoId}";
+
+                return new PropertyView()
+                {
+                    Id = prop.Id,
+                    CityName = cityName ?? prop.City.Name,
+                    Address = prop.Address,
+                    Price = prop.Price,
+                    PhotoUrl = photoUrl,
+                };
+            });
         }
     }
 }

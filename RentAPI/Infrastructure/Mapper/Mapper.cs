@@ -36,7 +36,8 @@ namespace RentAPI.Infrastructure.Mapper
 
             CreateMap<City, CityView>();
             CreateMap<Response, ResponseView>();
-            CreateMap<Comment, CommentView>();
+            CreateMap<Comment, CommentView>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Tenant.UserName));
             CreateMap<Property, PropertyView>();
         }
     }

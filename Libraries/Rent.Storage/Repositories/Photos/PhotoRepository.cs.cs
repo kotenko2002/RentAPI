@@ -17,5 +17,14 @@ namespace Rent.Storage.Repositories.Photos
                 .Where(p => ids.Contains(p.Id))
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Photo>> GetFirstPhotoByPropertyIds(int[] propertyIds)
+        {
+            return await Sourse
+                .Where(p => propertyIds.Contains(p.PropertyId))
+                .GroupBy(p => p.PropertyId)
+                .Select(g => g.FirstOrDefault())
+                .ToListAsync();
+        }
     }
 }

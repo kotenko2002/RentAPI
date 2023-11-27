@@ -6,5 +6,6 @@ namespace Rent.Storage.Repositories.Comments
     public interface ICommentRepository : IBaseRepository<Comment>
     {
         Task<IEnumerable<Comment>> GetFullCommentsByPropertyIdAsync(int propertyId);
+        Task<Comment> GetFullCommentByIdAsync(int id);
     }
 }
