@@ -361,3 +361,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Custom files
+RentAPI/Uploads/*
+RentAPI/appsettings.json
+RentAPI/google_drive_credentials.json
