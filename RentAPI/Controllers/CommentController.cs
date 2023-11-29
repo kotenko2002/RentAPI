@@ -27,7 +27,7 @@ namespace RentAPI.Controllers
             _commentService = commentService;
         }
 
-        [HttpPost("add"), Authorize(Roles = Roles.Tenant)]
+        [HttpPost("tenant/add"), Authorize(Roles = Roles.Tenant)]
         public async Task<IActionResult> AddNewProperty(AddCommentModel model)
         {
             var entity = _mapper.Map<Comment>(model);
@@ -46,7 +46,7 @@ namespace RentAPI.Controllers
             return Ok(comments);
         }
 
-        [HttpDelete("{commentId}"), Authorize(Roles = Roles.Tenant)]
+        [HttpDelete("tenant/{commentId}"), Authorize(Roles = Roles.Tenant)]
         public async Task<IActionResult> DeleteProperty(int commentId)
         {
             string userId = _httpContextAccessor.HttpContext.User.GetUserId();

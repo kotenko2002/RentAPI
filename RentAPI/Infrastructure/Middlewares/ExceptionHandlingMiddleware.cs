@@ -25,11 +25,11 @@ namespace RentAPI.Infrastructure.Middlewares
                     ex.Message,
                     ex.StatusCode);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await HandleExceptionAsync(
                     httpContext,
-                    ex.Message,
+                    "Internal Server Error",
                     HttpStatusCode.InternalServerError);
             }
         }

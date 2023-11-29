@@ -19,7 +19,7 @@ namespace Rent.Storage.Repositories.Properties
                 .Include(p => p.Responses)
                     .ThenInclude(r => r.Tenant)
                 .Include(p => p.Photos)
-                .Include(p => p.City)//?
+                .Include(p => p.City)
                 .FirstOrDefaultAsync(p => p.Id == propertyId);
         }
 

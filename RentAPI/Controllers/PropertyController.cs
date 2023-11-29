@@ -27,7 +27,7 @@ namespace RentAPI.Controllers
             _propertyService = propertyService;
         }
 
-        [HttpPost("add"), Authorize(Roles = Roles.Landlord)]
+        [HttpPost("landlord/add"), Authorize(Roles = Roles.Landlord)]
         public async Task<IActionResult> AddNewProperty([FromForm] AddPropertyModel model)
         {
             if (model.Photos.Any(photo => !photo.IsPhoto()))
@@ -43,7 +43,7 @@ namespace RentAPI.Controllers
             return Ok("Added successfully!");
         }
 
-        [HttpPatch("edit"), Authorize(Roles = Roles.Landlord)]
+        [HttpPatch("landlord/edit"), Authorize(Roles = Roles.Landlord)]
         public async Task<IActionResult> EditProperty([FromForm] EditPropertyModel model)
         {
             var descriptor = _mapper.Map<EditPropertyDescriptor>(model);
@@ -54,7 +54,7 @@ namespace RentAPI.Controllers
             return Ok("Edited successfully!");
         }
 
-        [HttpGet("items/{cityId}"), Authorize(Roles = Roles.Tenant)]
+        [HttpGet("tenant/items/{cityId}"), Authorize(Roles = Roles.Tenant)]
         public async Task<IActionResult> GetPropertiesByCityId(int cityId)
         {
             IEnumerable<PropertyView> views = await _propertyService.GetPropertiesByCityIdAsync(cityId);
@@ -62,7 +62,7 @@ namespace RentAPI.Controllers
             return Ok(views);
         }
 
-        [HttpGet("items"), Authorize(Roles = Roles.Landlord)]
+        [HttpGet("landlord/items"), Authorize(Roles = Roles.Landlord)]
         public async Task<IActionResult> GetPropertiesByLandlordId()
         {
             string userId = _httpContextAccessor.HttpContext.User.GetUserId();
@@ -77,7 +77,7 @@ namespace RentAPI.Controllers
             return Ok(await _propertyService.GetFullInfoByIdAsync(propertyId));
         }
 
-        [HttpDelete("{propertyId}"), Authorize(Roles = Roles.Landlord)]
+        [HttpDelete("landlord/{propertyId}"), Authorize(Roles = Roles.Landlord)]
         public async Task<IActionResult> DeleteProperty(int propertyId)
         {
             string userId = _httpContextAccessor.HttpContext.User.GetUserId();

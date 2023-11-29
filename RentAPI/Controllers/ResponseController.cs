@@ -27,7 +27,7 @@ namespace RentAPI.Controllers
             _responseService = responseService;
         }
 
-        [HttpPost("add"), Authorize(Roles = Roles.Tenant)]
+        [HttpPost("tenant/add"), Authorize(Roles = Roles.Tenant)]
         public async Task<IActionResult> AddNewResponse(AddResponseModel model)
         {
             var entity = _mapper.Map<Response>(model);
@@ -38,7 +38,7 @@ namespace RentAPI.Controllers
             return Ok("Added successfully!");
         }
 
-        [HttpGet("items/{propertyId}"), Authorize(Roles = Roles.Landlord)]
+        [HttpGet("landlord/items/{propertyId}"), Authorize(Roles = Roles.Landlord)]
         public async Task<IActionResult> GetResponseByPropertyId(int propertyId)
         {
             string landlordId = _httpContextAccessor.HttpContext.User.GetUserId();
@@ -48,7 +48,7 @@ namespace RentAPI.Controllers
             return Ok(responses);
         }
 
-        [HttpPatch("process"), Authorize(Roles = Roles.Landlord)]
+        [HttpPatch("landlord/process"), Authorize(Roles = Roles.Landlord)]
         public async Task<IActionResult> Process(ProcessResponseModel model)
         {
             var descriptor = _mapper.Map<ProcessResponseDescriptor>(model);
