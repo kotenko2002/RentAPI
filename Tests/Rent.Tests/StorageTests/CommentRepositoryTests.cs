@@ -1,5 +1,7 @@
-﻿using NUnit.Framework;
+﻿using Castle.Core.Resource;
+using NUnit.Framework;
 using Rent.Entities.Comments;
+using Rent.Entities.Users;
 using Rent.Storage.Configuration;
 using Rent.Storage.Repositories.Comments;
 
@@ -40,7 +42,7 @@ namespace Rent.Tests.StorageTests
             using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
             var commentRepository = new CommentRepository(context);
 
-            var comment = new Comment { Id = 3, TenantId = "2", PropertyId = 1, Message = "Message1", Rate = Rate.Excellent };
+            var comment = new Comment { Id = 3, TenantId = "3", PropertyId = 1, Message = "Message1", Rate = Rate.Excellent };
             await commentRepository.AddAsync(comment);
             await context.SaveChangesAsync();
 
@@ -56,8 +58,8 @@ namespace Rent.Tests.StorageTests
 
             var comments = new[]
             {
-                new Comment { Id = 3, TenantId = "2", PropertyId = 1, Message = "Message1", Rate = Rate.Poor },
-                new Comment { Id = 4, TenantId = "2", PropertyId = 3, Message = "Message1", Rate = Rate.Excellent }
+                new Comment { Id = 3, TenantId = "3", PropertyId = 1, Message = "Message1", Rate = Rate.Poor },
+                new Comment { Id = 4, TenantId = "3", PropertyId = 3, Message = "Message1", Rate = Rate.Excellent }
             };
             await commentRepository.AddRangeAsync(comments);
             await context.SaveChangesAsync();
@@ -72,7 +74,7 @@ namespace Rent.Tests.StorageTests
             using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
             var commentRepository = new CommentRepository(context);
 
-            var comment = new Comment { Id = 1, TenantId = "2", PropertyId = 1, Message = "Message1", Rate = Rate.Average };
+            var comment = new Comment { Id = 1, TenantId = "3", PropertyId = 1, Message = "Message1", Rate = Rate.Average };
             await commentRepository.RemoveAsync(comment);
             await context.SaveChangesAsync();
 
@@ -88,8 +90,8 @@ namespace Rent.Tests.StorageTests
 
             var comments = new[]
             {
-                new Comment { Id = 1, TenantId = "2", PropertyId = 1, Message = "Message1", Rate = Rate.Average },
-                new Comment { Id = 2, TenantId = "2", PropertyId = 3, Message = "Message2", Rate = Rate.Average }
+                new Comment { Id = 1, TenantId = "3", PropertyId = 1, Message = "Message1", Rate = Rate.Average },
+                new Comment { Id = 2, TenantId = "3", PropertyId = 3, Message = "Message2", Rate = Rate.Average }
             };
             await commentRepository.RemoveRangeAsync(comments);
             await context.SaveChangesAsync();
@@ -99,11 +101,50 @@ namespace Rent.Tests.StorageTests
         }
         #endregion
 
+        [Test]
+        public async Task CommentRepository_GetFullCommentsByPropertyIdAsync_ReturnsAllCommentsForProperty()
+        {
+            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            var commentRepository = new CommentRepository(context);
+
+            var actual = await commentRepository.GetFullCommentsByPropertyIdAsync(1);
+            var expected = ExpectedComments.Where(c => c.PropertyId == 1);
+
+            Assert.That(actual,
+                Is.EqualTo(expected).Using(new CommentEqualityComparer()), message: "GetFullCommentsByPropertyIdAsync method works incorrect");
+
+            Assert.That(actual.Select(i => i.Tenant).OrderBy(i => i.Id),
+                Is.EqualTo(ExpectedUsers).Using(new UserEqualityComparer()), message: "GetFullCommentsByPropertyIdAsync method doesnt't return included entities");
+        }
+
+        [TestCase(1)]
+        [TestCase(2)]
+        public async Task CommentRepository_GetFullCommentByIdAsync_ReturnsSingleComment(int id)
+        {
+            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            var commentRepository = new CommentRepository(context);
+
+            var actual = await commentRepository.GetFullCommentByIdAsync(id);
+            var expected = ExpectedComments.FirstOrDefault(c => c.Id == id);
+
+            Assert.That(actual,
+                Is.EqualTo(expected).Using(new CommentEqualityComparer()), message: "GetFullCommentByIdAsync method works incorrect");
+
+            Assert.That(actual.Tenant,
+               Is.EqualTo(ExpectedUsers.FirstOrDefault(x => x.Id == expected.TenantId)).Using(new UserEqualityComparer()), message: "GetFullCommentByIdAsync method doesnt't return included entities");
+        }
+
         private static IEnumerable<Comment> ExpectedComments =>
             new[]
             {
-                 new Comment { Id = 1, TenantId = "2", PropertyId = 1, Message = "Message1", Rate = Rate.Average },
-                 new Comment { Id = 2, TenantId = "2", PropertyId = 3, Message = "Message2", Rate = Rate.Average }
+                 new Comment { Id = 1, TenantId = "3", PropertyId = 1, Message = "Message1", Rate = Rate.Average },
+                 new Comment { Id = 2, TenantId = "3", PropertyId = 3, Message = "Message2", Rate = Rate.Average }
+            };
+
+        private static IEnumerable<User> ExpectedUsers =>
+            new[]
+            {
+                new User { Id = "3", UserName = "Tenant1" }
             };
     }
 }

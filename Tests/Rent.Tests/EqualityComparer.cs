@@ -3,10 +3,31 @@ using Rent.Entities.Comments;
 using Rent.Entities.Photos;
 using Rent.Entities.Properties;
 using Rent.Entities.Responses;
+using Rent.Entities.Users;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Rent.Tests
 {
+    internal class UserEqualityComparer : IEqualityComparer<User>
+    {
+        public bool Equals([AllowNull] User x, [AllowNull] User y)
+        {
+            if (x == null && y == null)
+                return true;
+            if (x == null || y == null)
+                return false;
+
+            return x.Id == y.Id
+                && string.Equals(x.Id, y.Id)
+                && string.Equals(x.UserName, y.UserName);
+        }
+
+        public int GetHashCode([DisallowNull] User obj)
+        {
+            return obj.GetHashCode();
+        }
+    }
+
     internal class CityEqualityComparer : IEqualityComparer<City>
     {
         public bool Equals([AllowNull] City x, [AllowNull] City y)
@@ -112,5 +133,4 @@ namespace Rent.Tests
             return obj.GetHashCode();
         }
     }
-
 }

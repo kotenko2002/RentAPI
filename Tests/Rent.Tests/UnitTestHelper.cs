@@ -43,19 +43,20 @@ namespace Rent.Tests
                 new City { Id = 2, Name = "City2" }
             );
             context.Users.AddRange(
-                new User { Id = "1", UserName = "Landlord1", RefreshToken = "RefreshToken1", RefreshTokenExpiryTime = DateTime.Now },
-                new User { Id = "2", UserName = "Landlord2", RefreshToken = "RefreshToken2", RefreshTokenExpiryTime = DateTime.Now },
-                new User { Id = "3", UserName = "Tenant1", RefreshToken = "RefreshToken3", RefreshTokenExpiryTime = DateTime.Now }
+                new User { Id = "1", UserName = "Landlord1" },
+                new User { Id = "2", UserName = "Landlord2" },
+                new User { Id = "3", UserName = "Tenant1" },
+                new User { Id = "4", UserName = "Tenant2" }
             );
             context.Roles.AddRange(
                 new IdentityRole { Id = "1", Name = Roles.Landlord },
-                new IdentityRole { Id = "2", Name = Roles.Landlord },
-                new IdentityRole { Id = "3", Name = Roles.Tenant }
+                new IdentityRole { Id = "2", Name = Roles.Tenant }
             );
             context.UserRoles.AddRange(
                 new IdentityUserRole<string> { UserId = "1", RoleId = "1" },
                 new IdentityUserRole<string> { UserId = "2", RoleId = "1" },
-                new IdentityUserRole<string> { UserId = "3", RoleId = "2" }
+                new IdentityUserRole<string> { UserId = "3", RoleId = "2" },
+                new IdentityUserRole<string> { UserId = "4", RoleId = "2" }
             );
             context.Properties.AddRange(
                 new Property { Id = 1, LandlordId = "1", CityId = 1, Address = "Address1", Description = "Description1", Price = 1000, Status = PropertyStatus.Available },
@@ -72,11 +73,12 @@ namespace Rent.Tests
             context.Responses.AddRange(
                 new Response { Id = 1, TenantId = "3", PropertyId = 1, Message = "Message1", Status = ResponseStatus.ApprovedToRent },
                 new Response { Id = 2, TenantId = "3", PropertyId = 2, Message = "Message2", Status = ResponseStatus.ApprovedToDialog },
-                new Response { Id = 3, TenantId = "3", PropertyId = 3, Message = "Message3", Status = ResponseStatus.ApprovedToRent }
+                new Response { Id = 3, TenantId = "3", PropertyId = 3, Message = "Message3", Status = ResponseStatus.ApprovedToRent },
+                new Response { Id = 4, TenantId = "4", PropertyId = 1, Message = "Message4", Status = ResponseStatus.NotReviewed }
             );
             context.Comments.AddRange(
-                new Comment { Id = 1, TenantId = "2", PropertyId = 1, Message = "Message1", Rate = Rate.Average },
-                new Comment { Id = 2, TenantId = "2", PropertyId = 3, Message = "Message2", Rate = Rate.Average }
+                new Comment { Id = 1, TenantId = "3", PropertyId = 1, Message = "Message1", Rate = Rate.Average },
+                new Comment { Id = 2, TenantId = "3", PropertyId = 3, Message = "Message2", Rate = Rate.Average }
             );
 
             context.SaveChanges();

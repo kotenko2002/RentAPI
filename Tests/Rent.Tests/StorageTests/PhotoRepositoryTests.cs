@@ -85,6 +85,21 @@ namespace Rent.Tests.StorageTests
         }
         #endregion
 
+        [Test]
+        public async Task PhotoRepository_GetPhotosByIds_ReturnsCorrectPhotos()
+        {
+            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            var photoRepository = new PhotoRepository(context);
+
+            var ids = new[] { "1", "2" };
+            var actual = await photoRepository.GetPhotosByIds(ids);
+
+            var expected = ExpectedPhotos.Where(p => ids.Contains(p.Id));
+
+            Assert.That(actual,
+                Is.EqualTo(expected).Using(new PhotoEqualityComparer()), message: "GetPhotosByIds method works incorrect");
+        }
+
         private static IEnumerable<Photo> ExpectedPhotos =>
             new[]
             {
