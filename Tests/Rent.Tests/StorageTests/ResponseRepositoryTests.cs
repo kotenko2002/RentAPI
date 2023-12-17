@@ -112,7 +112,7 @@ namespace Rent.Tests.StorageTests
             Assert.That(actual, Is.EqualTo(expected).Using(new ResponseEqualityComparer()), message: "GetFullResponseByIdAsync method works incorrect");
 
             Assert.That(actual.Property,
-              Is.EqualTo(ExpectedProperties.FirstOrDefault(x => x.Id == expected.PropertyId)).Using(new PropertyEqualityComparer()), message: "GetFullResponseByIdAsync method doesnt't return included entities");
+                Is.EqualTo(ExpectedProperties.FirstOrDefault(x => x.Id == expected.PropertyId)).Using(new PropertyEqualityComparer()), message: "GetFullResponseByIdAsync method doesnt't return included entities");
         }
 
         [TestCase(1, "3")]
