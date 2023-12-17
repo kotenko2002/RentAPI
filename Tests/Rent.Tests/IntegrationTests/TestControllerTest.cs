@@ -25,6 +25,7 @@ namespace Rent.Tests.IntegrationTests
         [SetUp]
         public void Setup()
         {
+            var databaseName = Guid.NewGuid().ToString();
             _factory = new WebApplicationFactory<RentAPI.Program>().WithWebHostBuilder(builder =>
             {
                 builder.ConfigureTestServices(services =>
@@ -36,9 +37,8 @@ namespace Rent.Tests.IntegrationTests
 
                     services.AddDbContext<ApplicationDbContext>(options =>
                     {
-                        options.UseInMemoryDatabase(Guid.NewGuid().ToString());
+                        options.UseInMemoryDatabase(databaseName);
                     });
-
                 });
             });
 
