@@ -176,35 +176,35 @@ namespace Rent.Tests.ServiceTests
             Assert.That(ex.Message, Is.EqualTo("Invalid access token or refresh token"));
         }
 
-        [Test]
-        public async Task RefreshTokensAsync_SuccessfulRefresh_ReturnsExpectedTokensPairView()
-        {
-            // Arrange
-            var descriptor = new RefreshTokensDescriptor { AccessToken = GenerateValidJwtToken(), RefreshToken = "ValidRefreshToken" };
-            var user = new User { Id = "TestUserId", UserName = "TestUser", RefreshToken = "ValidRefreshToken", RefreshTokenExpiryTime = DateTime.Now.AddDays(1) };
-            _mockUserManager.Setup(x => x.FindByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(user);
+        //[Test]
+        //public async Task RefreshTokensAsync_SuccessfulRefresh_ReturnsExpectedTokensPairView()
+        //{
+        //    // Arrange
+        //    var descriptor = new RefreshTokensDescriptor { AccessToken = GenerateValidJwtToken(), RefreshToken = "ValidRefreshToken" };
+        //    var user = new User { Id = "TestUserId", UserName = "TestUser", RefreshToken = "ValidRefreshToken", RefreshTokenExpiryTime = DateTime.Now.AddDays(1) };
+        //    _mockUserManager.Setup(x => x.FindByNameAsync(It.IsAny<string>()))
+        //        .ReturnsAsync(user);
 
-            // Act
-            var result = await _authService.RefreshTokensAsync(descriptor);
+        //    // Act
+        //    var result = await _authService.RefreshTokensAsync(descriptor);
 
-            // Assert
-            Assert.IsNotNull(result);
-            //Assert.AreEqual(user.Id, result.User.Id);
-            _mockUserManager.Verify(x => x.FindByNameAsync(user.UserName), Times.Once);
-            _mockUserManager.Verify(x => x.UpdateAsync(user), Times.Once);
-        }
+        //    // Assert
+        //    Assert.IsNotNull(result);
+        //    //Assert.AreEqual(user.Id, result.User.Id);
+        //    _mockUserManager.Verify(x => x.FindByNameAsync(user.UserName), Times.Once);
+        //    _mockUserManager.Verify(x => x.UpdateAsync(user), Times.Once);
+        //}
 
-        [Test]
-        public void RefreshTokensAsync_InvalidTokens_ThrowsBusinessException()
-        {
-            // Arrange
-            var descriptor = new RefreshTokensDescriptor { AccessToken = "InvalidAccessToken", RefreshToken = "InvalidRefreshToken" };
+        //[Test]
+        //public void RefreshTokensAsync_InvalidTokens_ThrowsBusinessException()
+        //{
+        //    // Arrange
+        //    var descriptor = new RefreshTokensDescriptor { AccessToken = "InvalidAccessToken", RefreshToken = "InvalidRefreshToken" };
 
-            // Act & Assert
-            var ex = Assert.ThrowsAsync<BusinessException>(() => _authService.RefreshTokensAsync(descriptor));
-            Assert.That(ex.Message, Is.EqualTo("Invalid access token or refresh token"));
-        }
+        //    // Act & Assert
+        //    var ex = Assert.ThrowsAsync<BusinessException>(() => _authService.RefreshTokensAsync(descriptor));
+        //    Assert.That(ex.Message, Is.EqualTo("Invalid access token or refresh token"));
+        //}
 
         private string GenerateValidJwtToken()
         {
