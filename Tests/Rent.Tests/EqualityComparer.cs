@@ -4,6 +4,7 @@ using Rent.Entities.Photos;
 using Rent.Entities.Properties;
 using Rent.Entities.Responses;
 using Rent.Entities.Users;
+using Rent.Service.Services.Cities.Views;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Rent.Tests
@@ -47,6 +48,25 @@ namespace Rent.Tests
         }
     }
 
+    internal class CityViewEqualityComparer : IEqualityComparer<CityView>
+    {
+        public bool Equals([AllowNull] CityView x, [AllowNull] CityView y)
+        {
+            if (x == null && y == null)
+                return true;
+            if (x == null || y == null)
+                return false;
+
+            return x.Id == y.Id
+                && string.Equals(x.Name, y.Name);
+        }
+
+        public int GetHashCode([DisallowNull] CityView obj)
+        {
+            return obj.GetHashCode();
+        }
+    }
+    
     internal class PropertyEqualityComparer : IEqualityComparer<Property>
     {
         public bool Equals([AllowNull] Property x, [AllowNull] Property y)
