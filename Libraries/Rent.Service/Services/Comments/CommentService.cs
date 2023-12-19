@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Rent.Common;
 using Rent.Entities.Comments;
+using Rent.Entities.Properties;
 using Rent.Entities.Responses;
 using Rent.Service.Services.Comments.Views;
 using Rent.Storage.Uow;
@@ -36,6 +37,20 @@ namespace Rent.Service.Services.Comments
             await _uow.CompleteAsync();
         }
 
+        public async Task<IEnumerable<CommentView>> GetCommentsByPropertyIdAsync(int propertyId)
+        {
+            Property property = await _uow.PropertyRepository.FindAsync(propertyId);
+
+            if (property == null)
+            {
+                throw new BusinessException(HttpStatusCode.NotFound, "Property not found.");
+            }
+
+            IEnumerable<Comment> comments = await _uow.CommentRepository.GetFullCommentsByPropertyIdAsync(propertyId);
+
+            return _mapper.Map<IEnumerable<CommentView>>(comments);
+        }
+
         public async Task DeleteAsync(int commentId, string tenantId)
         {
             Comment entity = await _uow.CommentRepository.GetFullCommentByIdAsync(commentId);
@@ -53,13 +68,6 @@ namespace Rent.Service.Services.Comments
 
             await _uow.CommentRepository.RemoveAsync(entity);
             await _uow.CompleteAsync();
-        }
-
-        public async Task<IEnumerable<CommentView>> GetCommentsByPropertyIdAsync(int propertyId)
-        {
-            IEnumerable<Comment> comments = await _uow.CommentRepository.GetFullCommentsByPropertyIdAsync(propertyId);
-
-            return _mapper.Map<IEnumerable<CommentView>>(comments);
         }
     }
 }

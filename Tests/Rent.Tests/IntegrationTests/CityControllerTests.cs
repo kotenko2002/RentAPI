@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using Rent.Entities.Cities;
 using Rent.Service.Services.Cities.Views;
 using System.Net;
 using System.Net.Http.Headers;
@@ -25,18 +24,20 @@ namespace Rent.Tests.IntegrationTests
         [Test]
         public async Task GetAllCities_ReturnsOk()
         {
+            // Arrange
             string accessToken = await _helper.GenerateAccessToken(_factory, "landlord1");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-            var response = await _client.GetAsync("/city/items");
-
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            // Act
+            var response = await _client.GetAsync("city/items");
 
             var responseContent = await response.Content.ReadAsStringAsync();
             var cities = JsonConvert.DeserializeObject<IEnumerable<CityView>>(responseContent);
 
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(cities,
-               Is.EqualTo(CityViews).Using(new CityViewEqualityComparer()), message: "GetAllCities endpoint works incorrect");
+               Is.EqualTo(CityViews).Using(new CityViewEqualityComparer()));
         }
 
         private IEnumerable<CityView> CityViews =>

@@ -1,12 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using Rent.Service.Configuration;
 using Rent.Service.Services.Authorization.Views;
-using Rent.Storage.Configuration;
 using RentAPI.Models.Auth;
 using System.Net;
 using System.Text;
@@ -40,7 +35,7 @@ namespace Rent.Tests.IntegrationTests
             };
             var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("/auth/register", content);
+            var response = await _client.PostAsync("auth/register", content);
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("User created successfully!"));
@@ -56,7 +51,7 @@ namespace Rent.Tests.IntegrationTests
             };
             var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("/auth/login", content);
+            var response = await _client.PostAsync("auth/login", content);
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
@@ -77,7 +72,7 @@ namespace Rent.Tests.IntegrationTests
             };
             var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("/auth/refresh-tokens", content);
+            var response = await _client.PostAsync("auth/refresh-tokens", content);
 
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 

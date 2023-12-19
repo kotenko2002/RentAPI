@@ -5,6 +5,8 @@ using Rent.Entities.Properties;
 using Rent.Entities.Responses;
 using Rent.Entities.Users;
 using Rent.Service.Services.Cities.Views;
+using Rent.Service.Services.Comments.Views;
+using Rent.Service.Services.Responses.Views;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Rent.Tests
@@ -113,6 +115,27 @@ namespace Rent.Tests
         }
     }
 
+    internal class CommentViewEqualityComparer : IEqualityComparer<CommentView>
+    {
+        public bool Equals([AllowNull] CommentView x, [AllowNull] CommentView y)
+        {
+            if (x == null && y == null)
+                return true;
+            if (x == null || y == null)
+                return false;
+
+            return x.Id == y.Id
+                && x.UserName == y.UserName
+                && x.Message == y.Message
+                && x.Rate == y.Rate;
+        }
+
+        public int GetHashCode([DisallowNull] CommentView obj)
+        {
+            return obj.GetHashCode();
+        }
+    }
+    
     internal class PhotoEqualityComparer : IEqualityComparer<Photo>
     {
         public bool Equals([AllowNull] Photo x, [AllowNull] Photo y)
@@ -149,6 +172,28 @@ namespace Rent.Tests
         }
 
         public int GetHashCode([DisallowNull] Response obj)
+        {
+            return obj.GetHashCode();
+        }
+    }
+
+    internal class ResponseViewEqualityComparer : IEqualityComparer<ResponseView>
+    {
+        public bool Equals([AllowNull] ResponseView x, [AllowNull] ResponseView y)
+        {
+            if (x == null && y == null)
+                return true;
+            if (x == null || y == null)
+                return false;
+
+            return x.Id == y.Id
+                && x.Email == y.Email
+                && x.PhoneNumber == y.PhoneNumber
+                && x.Message == y.Message
+                && x.Status == y.Status;
+        }
+
+        public int GetHashCode([DisallowNull] ResponseView obj)
         {
             return obj.GetHashCode();
         }

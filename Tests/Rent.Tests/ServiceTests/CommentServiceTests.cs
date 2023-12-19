@@ -2,6 +2,7 @@
 using Moq;
 using NUnit.Framework;
 using Rent.Entities.Comments;
+using Rent.Entities.Properties;
 using Rent.Entities.Responses;
 using Rent.Service.Services.Comments;
 using Rent.Storage.Uow;
@@ -56,6 +57,16 @@ namespace Rent.Tests.ServiceTests
         public async Task CommentService_GetCommentsByPropertyIdAsync_ReturnsComments()
         {
             // Arrange
+            var property = new Property()
+            {
+                Id = 1,
+                LandlordId = "1",
+                CityId = 1,
+                Address = "Address1",
+                Description = "Description1",
+                Price = 1000,
+                Status = PropertyStatus.Available
+            };
             var comments = new List<Comment>
             {
                 new Comment { PropertyId = 1, TenantId = "1", Message = "Message1", Rate = Rate.Average },
@@ -63,6 +74,7 @@ namespace Rent.Tests.ServiceTests
             };
 
             var mockUnitOfWork = new Mock<IUnitOfWork>();
+            mockUnitOfWork.Setup(x => x.PropertyRepository.FindAsync(It.IsAny<int>())).ReturnsAsync(property);
             mockUnitOfWork.Setup(x => x.CommentRepository.GetFullCommentsByPropertyIdAsync(It.IsAny<int>())).ReturnsAsync(comments);
 
             var commentService = new CommentService(UnitTestHelper.CreateMapperProfile(), mockUnitOfWork.Object);

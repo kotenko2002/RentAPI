@@ -85,10 +85,10 @@ namespace Rent.Tests
             await roleManager.CreateAsync(new IdentityRole(Roles.Landlord));
             await roleManager.CreateAsync(new IdentityRole(Roles.Tenant));
 
-            var landlord1 = await AddUser(userManager, "landlord1", "landlord1@example.com", Roles.Landlord);
-            var landlord2 = await AddUser(userManager, "landlord2", "landlord2@example.com", Roles.Landlord);
-            var tenant1 = await AddUser(userManager, "tenant1", "tenant1@example.com", Roles.Tenant);
-            var tenant2 = await AddUser(userManager, "tenant2", "tenant2@example.com", Roles.Tenant);
+            var landlord1 = await AddUser(userManager, "landlord1", "landlord1@example.com", "0988888881", Roles.Landlord);
+            var landlord2 = await AddUser(userManager, "landlord2", "landlord2@example.com", "0988888882", Roles.Landlord);
+            var tenant1 = await AddUser(userManager, "tenant1", "tenant1@example.com", "0988888883", Roles.Tenant);
+            var tenant2 = await AddUser(userManager, "tenant2", "tenant2@example.com", "0988888884", Roles.Tenant);
 
             context.Cities.AddRange(
                 new City { Id = 1, Name = "City1" },
@@ -119,9 +119,9 @@ namespace Rent.Tests
 
             await context.SaveChangesAsync();
         }
-        private async Task<User> AddUser(UserManager<User> userManager, string username, string email, string role)
+        private async Task<User> AddUser(UserManager<User> userManager, string username, string email, string phone, string role)
         {
-            var user = new User { UserName = username, Email = email, RefreshToken = "refresh_token", RefreshTokenExpiryTime = DateTime.Now.AddDays(1) };
+            var user = new User { UserName = username, Email = email, PhoneNumber = phone, RefreshToken = "refresh_token", RefreshTokenExpiryTime = DateTime.Now.AddDays(1) };
             await userManager.CreateAsync(user, "Qwerty123!");
             await userManager.AddToRoleAsync(user, role);
             return user;
