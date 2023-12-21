@@ -66,13 +66,13 @@ namespace RentAPI.Controllers
         public async Task<IActionResult> GetPropertiesByLandlordId()
         {
             string userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            IEnumerable<PropertyView> views = await _propertyService.GetPropertiesByLandlordId(userId);
+            IEnumerable<PropertyView> views = await _propertyService.GetPropertiesByLandlordIdAsync(userId);
 
             return Ok(views);
         }
 
         [HttpGet("item/{propertyId}")]
-        public async Task<IActionResult> GetPropertyFullInfoByIdAsync(int propertyId)
+        public async Task<IActionResult> GetPropertyFullInfoById(int propertyId)
         {
             return Ok(await _propertyService.GetFullInfoByIdAsync(propertyId));
         }

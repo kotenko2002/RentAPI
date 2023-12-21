@@ -8,6 +8,7 @@ using RentAPI.Infrastructure.Middlewares;
 using RentAPI.Models.Comments;
 using System.Text;
 using Rent.Service.Services.Comments.Views;
+using Rent.Tests.Helpers;
 
 namespace Rent.Tests.IntegrationTests
 {

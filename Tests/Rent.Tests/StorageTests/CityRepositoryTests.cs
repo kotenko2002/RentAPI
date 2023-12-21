@@ -2,6 +2,7 @@
 using Rent.Entities.Cities;
 using Rent.Storage.Configuration;
 using Rent.Storage.Repositories.Cities;
+using Rent.Tests.Helpers;
 
 namespace Rent.Tests.StorageTests
 {

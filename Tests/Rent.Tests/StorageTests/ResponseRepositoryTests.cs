@@ -3,6 +3,7 @@ using Rent.Entities.Properties;
 using Rent.Entities.Responses;
 using Rent.Storage.Configuration;
 using Rent.Storage.Repositories.Responses;
+using Rent.Tests.Helpers;
 
 namespace Rent.Tests.StorageTests
 {

@@ -8,6 +8,7 @@ using System.Text;
 using RentAPI.Infrastructure.Middlewares;
 using Rent.Entities.Responses;
 using Rent.Service.Services.Responses.Views;
+using Rent.Tests.Helpers;
 
 namespace Rent.Tests.IntegrationTests
 {

@@ -4,6 +4,7 @@ using Rent.Entities.Comments;
 using Rent.Entities.Users;
 using Rent.Storage.Configuration;
 using Rent.Storage.Repositories.Comments;
+using Rent.Tests.Helpers;
 
 namespace Rent.Tests.StorageTests
 {

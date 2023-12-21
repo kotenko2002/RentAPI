@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using NUnit.Framework;
 using Rent.Service.Services.Cities.Views;
+using Rent.Tests.Helpers;
 using System.Net;
 using System.Net.Http.Headers;
 

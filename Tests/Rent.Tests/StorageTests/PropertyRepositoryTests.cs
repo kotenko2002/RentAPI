@@ -7,6 +7,7 @@ using Rent.Entities.Responses;
 using Rent.Entities.Users;
 using Rent.Storage.Configuration;
 using Rent.Storage.Repositories.Properties;
+using Rent.Tests.Helpers;
 
 namespace Rent.Tests.StorageTests
 {

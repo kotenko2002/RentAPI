@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -6,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Moq;
 using Rent.Entities.Cities;
 using Rent.Entities.Comments;
 using Rent.Entities.Photos;
@@ -13,32 +15,33 @@ using Rent.Entities.Properties;
 using Rent.Entities.Responses;
 using Rent.Entities.Users;
 using Rent.Service.Configuration;
+using Rent.Service.Services.FileStorage;
 using Rent.Storage.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Rent.Tests
+namespace Rent.Tests.Helpers
 {
     public class IntegrationTestHelper
     {
         public WebApplicationFactory<RentAPI.Program> GetWebApplicationFactory(string databaseName)
         {
             var factory = new WebApplicationFactory<RentAPI.Program>().WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
                 {
-                    builder.ConfigureTestServices(services =>
+                    var dbContextDescriptor = services.SingleOrDefault(d =>
+                        d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
+
+                    services.Remove(dbContextDescriptor);
+
+                    services.AddDbContext<ApplicationDbContext>(options =>
                     {
-                        var dbContextDescriptor = services.SingleOrDefault(d =>
-                            d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
-
-                        services.Remove(dbContextDescriptor);
-
-                        services.AddDbContext<ApplicationDbContext>(options =>
-                        {
-                            options.UseInMemoryDatabase(databaseName);
-                        });
+                        options.UseInMemoryDatabase(databaseName);
                     });
                 });
+            });
 
             using var scope = factory.Services.CreateScope(); ;
             var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -50,7 +53,7 @@ namespace Rent.Tests
             return factory;
         }
 
-        public async Task<string> GenerateAccessToken(WebApplicationFactory<RentAPI.Program> factory, string username)
+        public async Task<string> GenerateAccessToken(WebApplicationFactory<RentAPI.Program> factory, string username, string fakeUserId = null)
         {
             using var scope = factory.Services.CreateScope();
             var config = scope.ServiceProvider.GetRequiredService<IOptions<JwtConfig>>().Value;
@@ -60,12 +63,12 @@ namespace Rent.Tests
 
             var authClaims = new List<Claim>
             {
-                new Claim("userId", user.Id),
+                new Claim("userId", fakeUserId ?? user.Id),
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
             IList<string> userRoles = await userManager.GetRolesAsync(user);
-         
+
             authClaims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.Secret));
@@ -125,6 +128,42 @@ namespace Rent.Tests
             await userManager.CreateAsync(user, "Qwerty123!");
             await userManager.AddToRoleAsync(user, role);
             return user;
+        }
+
+        public FormFile GetPhoto(string fileName)
+        {
+            string currentDirectory = Directory.GetCurrentDirectory();
+            string projectDirectory = Directory.GetParent(currentDirectory).Parent.Parent.FullName;
+            string filePath = Path.Combine(projectDirectory, "Helpers", "Photos", fileName);
+
+            string fileExtension = Path.GetExtension(fileName);
+            string contentType = GetContentType(fileExtension);
+
+            var stream = File.OpenRead(filePath);
+            var memoryStream = new MemoryStream();
+            stream.CopyTo(memoryStream);
+
+            return new FormFile(memoryStream, 0, memoryStream.Length, null, Path.GetFileName(stream.Name))
+            {
+                Headers = new HeaderDictionary(),
+                ContentType = contentType
+            };
+        }
+
+        private string GetContentType(string fileExtension)
+        {
+            switch (fileExtension.ToLower())
+            {
+                case ".jpg":
+                case ".jpeg":
+                    return "image/jpeg";
+                case ".png":
+                    return "image/png";
+                case ".webp":
+                    return "image/webp";
+                default:
+                    return "application/octet-stream";
+            }
         }
     }
 }

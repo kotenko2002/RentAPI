@@ -2,6 +2,7 @@
 using Rent.Entities.Photos;
 using Rent.Storage.Configuration;
 using Rent.Storage.Repositories.Photos;
+using Rent.Tests.Helpers;
 
 namespace Rent.Tests.StorageTests
 {

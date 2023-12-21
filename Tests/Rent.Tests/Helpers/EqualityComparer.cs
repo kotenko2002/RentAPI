@@ -6,10 +6,11 @@ using Rent.Entities.Responses;
 using Rent.Entities.Users;
 using Rent.Service.Services.Cities.Views;
 using Rent.Service.Services.Comments.Views;
+using Rent.Service.Services.Properties.Views;
 using Rent.Service.Services.Responses.Views;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Rent.Tests
+namespace Rent.Tests.Helpers
 {
     internal class UserEqualityComparer : IEqualityComparer<User>
     {
@@ -68,7 +69,7 @@ namespace Rent.Tests
             return obj.GetHashCode();
         }
     }
-    
+
     internal class PropertyEqualityComparer : IEqualityComparer<Property>
     {
         public bool Equals([AllowNull] Property x, [AllowNull] Property y)
@@ -88,6 +89,71 @@ namespace Rent.Tests
         }
 
         public int GetHashCode([DisallowNull] Property obj)
+        {
+            return obj.GetHashCode();
+        }
+    }
+
+    internal class PropertyViewEqualityComparer : IEqualityComparer<PropertyView>
+    {
+        public bool Equals([AllowNull] PropertyView x, [AllowNull] PropertyView y)
+        {
+            if (x == null && y == null)
+                return true;
+            if (x == null || y == null)
+                return false;
+
+            return x.Id == y.Id
+                && string.Equals(x.CityName, y.CityName)
+                && string.Equals(x.Address, y.Address)
+                && x.Price == y.Price
+                && string.Equals(x.PhotoUrl, y.PhotoUrl);
+        }
+
+        public int GetHashCode([DisallowNull] PropertyView obj)
+        {
+            return obj.GetHashCode();
+        }
+    }
+
+    internal class PropertyDetailViewEqualityComparer : IEqualityComparer<PropertyDetailView>
+    {
+        public bool Equals([AllowNull] PropertyDetailView x, [AllowNull] PropertyDetailView y)
+        {
+            if (x == null && y == null)
+                return true;
+            if (x == null || y == null)
+                return false;
+
+            return x.Id == y.Id
+                && x.CityId == y.CityId
+                && string.Equals(x.CityName, y.CityName)
+                && string.Equals(x.Address, y.Address)
+                && string.Equals(x.Description, y.Description)
+                && x.Price == y.Price
+                && x.Photos.SequenceEqual(y.Photos, new PhotoViewEqualityComparer());
+        }
+
+        public int GetHashCode([DisallowNull] PropertyDetailView obj)
+        {
+            return obj.GetHashCode();
+        }
+    }
+
+    internal class PhotoViewEqualityComparer : IEqualityComparer<PhotoView>
+    {
+        public bool Equals([AllowNull] PhotoView x, [AllowNull] PhotoView y)
+        {
+            if (x == null && y == null)
+                return true;
+            if (x == null || y == null)
+                return false;
+
+            return string.Equals(x.Id, y.Id)
+                && string.Equals(x.Url, y.Url);
+        }
+
+        public int GetHashCode([DisallowNull] PhotoView obj)
         {
             return obj.GetHashCode();
         }
@@ -135,7 +201,7 @@ namespace Rent.Tests
             return obj.GetHashCode();
         }
     }
-    
+
     internal class PhotoEqualityComparer : IEqualityComparer<Photo>
     {
         public bool Equals([AllowNull] Photo x, [AllowNull] Photo y)

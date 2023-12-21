@@ -10,7 +10,7 @@ using Rent.Entities.Users;
 using Rent.Storage.Configuration;
 using RentAPI.Infrastructure.Mapper;
 
-namespace Rent.Tests
+namespace Rent.Tests.Helpers
 {
     public static class UnitTestHelper
     {

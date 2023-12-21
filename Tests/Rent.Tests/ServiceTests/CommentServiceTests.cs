@@ -6,6 +6,7 @@ using Rent.Entities.Properties;
 using Rent.Entities.Responses;
 using Rent.Service.Services.Comments;
 using Rent.Storage.Uow;
+using Rent.Tests.Helpers;
 
 namespace Rent.Tests.ServiceTests
 {
