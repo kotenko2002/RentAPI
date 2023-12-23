@@ -12,154 +12,101 @@ using Rent.Tests.Helpers;
 
 namespace Rent.Tests.IntegrationTests
 {
-    public class ResponseControllerTests
+    public class ResponseControllerTests : BaseIntegrationTest
     {
-        private IntegrationTestHelper _helper;
-        private WebApplicationFactory<RentAPI.Program> _factory;
-        private HttpClient _client;
-
-        [SetUp]
-        public void Setup()
-        {
-            _helper = new IntegrationTestHelper();
-            _factory = _helper.GetWebApplicationFactory(Guid.NewGuid().ToString());
-            _client = _factory.CreateClient();
-        }
-
         #region AddNewResponse
         [Test]
-        public async Task AddNewResponse_ReturnsOk()
+        public Task AddNewResponse_ReturnsOk()
         {
-            // Arrange
-            string accessToken = await _helper.GenerateAccessToken(_factory, "tenant1");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-            var model = new AddResponseModel
+            return PerformTest(async (client) =>
             {
-                PropertyId = 1,
-                Message = "Test message"
-            };
-            var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+                // Arrange
+                string accessToken = await GenerateAccessToken(username: "tenant1");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-            // Act
-            var response = await _client.PostAsync("response/tenant/add", content);
-            var responseContent = await response.Content.ReadAsStringAsync();
+                var model = new AddResponseModel
+                {
+                    PropertyId = 1,
+                    Message = "Test message"
+                };
+                var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
 
-            // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            Assert.That(responseContent, Is.EqualTo("Added successfully!"));
+                // Act
+                var response = await client.PostAsync("response/tenant/add", content);
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(responseContent, Is.EqualTo("Added successfully!"));
+            });
         }
         #endregion
 
         #region GetResponseByPropertyId
         [Test]
-        public async Task GetResponsesByPropertyId_ReturnsOk()
+        public Task GetResponsesByPropertyId_ReturnsOk()
         {
-            // Arrange
-            string accessToken = await _helper.GenerateAccessToken(_factory, "landlord1");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            int propertyId = 1;
-
-            // Act
-            var response = await _client.GetAsync($"response/landlord/items/{propertyId}");
-
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var responses = JsonConvert.DeserializeObject<IEnumerable<ResponseView>>(responseContent);
-
-            // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            Assert.That(responses,
-               Is.EqualTo(ResponseViews).Using(new ResponseViewEqualityComparer()));
-        }
-
-        [Test]
-        public async Task GetResponseByPropertyId_PropertyNotFound_ReturnsNotFound()
-        {
-            // Arrange
-            string accessToken = await _helper.GenerateAccessToken(_factory, "landlord1");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            int propertyId = 9999; 
-
-            // Act
-            var response = await _client.GetAsync($"response/landlord/items/{propertyId}");
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
-
-            // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
-            Assert.That(errorResponse.Message, Is.EqualTo("Property not found."));
-        }
-
-        [Test]
-        public async Task GetResponseByPropertyId_AccessDenied_ReturnsForbidden()
-        {
-            // Arrange
-            string accessToken = await _helper.GenerateAccessToken(_factory, "landlord2");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            int propertyId = 1;
-
-            // Act
-            var response = await _client.GetAsync($"response/landlord/items/{propertyId}");
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
-
-            // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
-            Assert.That(errorResponse.Message, Is.EqualTo("Access denied. You do not have permission to get responses for this property."));
-        }
-        #endregion
-
-        #region Process
-        [Test]
-        public async Task Process_ReturnsOk()
-        {
-            // Arrange
-            string accessToken = await _helper.GenerateAccessToken(_factory, "landlord1");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-            var model = new ProcessResponseModel
+            return PerformTest(async (client) =>
             {
-                ResponseId = 1, 
-                Status = ResponseStatus.ApprovedToRent 
-            };
+                // Arrange
+                string accessToken = await GenerateAccessToken(username: "landlord1");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                int propertyId = 1;
 
-            var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+                // Act
+                var response = await client.GetAsync($"response/landlord/items/{propertyId}");
 
-            // Act
-            var response = await _client.PatchAsync("response/landlord/process", content);
-            var responseContent = await response.Content.ReadAsStringAsync();
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var responses = JsonConvert.DeserializeObject<IEnumerable<ResponseView>>(responseContent);
 
-            // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            Assert.That(responseContent, Is.EqualTo("Status updated successfully!"));
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(responses,
+                   Is.EqualTo(ResponseViews).Using(new ResponseViewEqualityComparer()));
+            });
         }
 
         [Test]
-        public async Task Process_AccessDenied_ReturnsForbidden()
+        public Task GetResponseByPropertyId_ReturnsPropertyNotFound()
         {
-            // Arrange
-            string accessToken = await _helper.GenerateAccessToken(_factory, "landlord2");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-            var model = new ProcessResponseModel
+            return PerformTest(async (client) =>
             {
-                ResponseId = 1,
-                Status = ResponseStatus.ApprovedToRent
-            };
+                // Arrange
+                string accessToken = await GenerateAccessToken(username: "landlord1");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                int propertyId = 9999; 
 
-            var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+                // Act
+                var response = await client.GetAsync($"response/landlord/items/{propertyId}");
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
 
-            // Act
-            var response = await _client.PatchAsync("response/landlord/process", content);
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
-
-            // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
-            Assert.That(errorResponse.Message, Is.EqualTo("Access denied. You do not have permission to process this response."));
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+                Assert.That(errorResponse.Message, Is.EqualTo("Property not found."));
+            });
         }
 
-        #endregion
+        [Test]
+        public Task GetResponseByPropertyId_ReturnsForbidden()
+        {
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                string accessToken = await GenerateAccessToken(username: "landlord2");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                int propertyId = 1;
+
+                // Act
+                var response = await client.GetAsync($"response/landlord/items/{propertyId}");
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
+                Assert.That(errorResponse.Message, Is.EqualTo("Access denied. You do not have permission to get responses for this property."));
+            });
+        }
 
         private IEnumerable<ResponseView> ResponseViews =>
             new[]
@@ -167,12 +114,63 @@ namespace Rent.Tests.IntegrationTests
                 new ResponseView { Id = 1, Email = "tenant1@example.com", PhoneNumber = "0988888883", Message = "Message1", Status = ResponseStatus.ApprovedToRent },
                 new ResponseView { Id = 4, Email = "tenant2@example.com", PhoneNumber = "0988888884", Message = "Message4", Status = ResponseStatus.NotReviewed }
             };
+        #endregion
 
-        [TearDown]
-        public void TearDown()
+        #region Process
+        [Test]
+        public Task Process_ReturnsOk()
         {
-            _client.Dispose();
-            _factory.Dispose();
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                string accessToken = await GenerateAccessToken(username: "landlord1");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                var model = new ProcessResponseModel
+                {
+                    ResponseId = 1, 
+                    Status = ResponseStatus.ApprovedToRent 
+                };
+
+                var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+
+                // Act
+                var response = await client.PatchAsync("response/landlord/process", content);
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(responseContent, Is.EqualTo("Status updated successfully!"));
+            });
         }
+
+        [Test]
+        public Task Process_AccessDenied_ReturnsForbidden()
+        {
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                string accessToken = await GenerateAccessToken(username: "landlord2");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                var model = new ProcessResponseModel
+                {
+                    ResponseId = 1,
+                    Status = ResponseStatus.ApprovedToRent
+                };
+
+                var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+
+                // Act
+                var response = await client.PatchAsync("response/landlord/process", content);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
+                Assert.That(errorResponse.Message, Is.EqualTo("Access denied. You do not have permission to process this response."));
+            });
+        }
+        #endregion
     }
 }

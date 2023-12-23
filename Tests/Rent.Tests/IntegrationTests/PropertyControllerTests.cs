@@ -22,7 +22,7 @@ namespace Rent.Tests.IntegrationTests
             return PerformTest(async (client) =>
             {
                 // Arrange
-                string accessToken = await GenerateAccessToken("landlord1");
+                string accessToken = await GenerateAccessToken(username: "landlord1");
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                 var model = GetAddPropertyModel(cityId: 1);
@@ -30,6 +30,7 @@ namespace Rent.Tests.IntegrationTests
 
                 // Act
                 var response = await client.PostAsync("property/landlord", content);
+
                 var responseContent = await response.Content.ReadAsStringAsync();
 
                 // Assert
@@ -46,12 +47,12 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task AddNewProperty_CityNotFound_ReturnsNotFound()
+        public Task AddNewProperty_ReturnsCityNotFound()
         {
             return PerformTest(async (client) =>
             {
                 // Arrange
-                string accessToken = await GenerateAccessToken("landlord1");
+                string accessToken = await GenerateAccessToken(username: "landlord1");
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                 var model = GetAddPropertyModel(cityId: 9999);
@@ -59,6 +60,7 @@ namespace Rent.Tests.IntegrationTests
 
                 // Act
                 var response = await client.PostAsync("property/landlord", content);
+
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
 
@@ -110,7 +112,7 @@ namespace Rent.Tests.IntegrationTests
             return PerformTest(async (client) =>
             {
                 // Arrange
-                string accessToken = await GenerateAccessToken("landlord1");
+                string accessToken = await GenerateAccessToken(username: "landlord1");
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                 var model = GetEditPropertyModel(propertyId: 1);
@@ -118,6 +120,7 @@ namespace Rent.Tests.IntegrationTests
 
                 // Act
                 var response = await client.PatchAsync("property/landlord", content);
+
                 var responseContent = await response.Content.ReadAsStringAsync();
 
                 // Assert
@@ -137,12 +140,12 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task EditProperty_PropertyNotFound_ReturnsNotFound()
+        public Task EditProperty_ReturnsPropertyNotFound()
         {
             return PerformTest(async (client) =>
             {
                 // Arrange
-                string accessToken = await GenerateAccessToken("landlord1");
+                string accessToken = await GenerateAccessToken(username: "landlord1");
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                 var model = GetEditPropertyModel(propertyId: 9999);
@@ -150,6 +153,7 @@ namespace Rent.Tests.IntegrationTests
 
                 // Act
                 var response = await client.PatchAsync("property/landlord", content);
+
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
 
@@ -160,12 +164,12 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task EditProperty_PropertyNotFound_AccessDenied_ReturnsForbidden()
+        public Task EditProperty_PropertyNotFound_ReturnsForbidden()
         {
             return PerformTest(async (client) =>
             {
                 // Arrange
-                string accessToken = await GenerateAccessToken("landlord1", fakeUserId: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxaxxxxxx");
+                string accessToken = await GenerateAccessToken(username: "landlord1", fakeUserId: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxaxxxxxx");
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                 var model = GetEditPropertyModel(propertyId: 1);
@@ -173,6 +177,7 @@ namespace Rent.Tests.IntegrationTests
 
                 // Act
                 var response = await client.PatchAsync("property/landlord", content);
+
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
 
@@ -236,7 +241,7 @@ namespace Rent.Tests.IntegrationTests
             return PerformTest(async (client) =>
             {
                 // Arrange
-                string accessToken = await GenerateAccessToken("tenant1");
+                string accessToken = await GenerateAccessToken(username: "tenant1");
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 int cityId = 1;
 
@@ -254,17 +259,18 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task GetPropertiesByCityId_CityNotFound_ReturnsNotFound()
+        public Task GetPropertiesByCityId_ReturnsCityNotFound()
         {
             return PerformTest(async (client) =>
             {
                 // Arrange
-                string accessToken = await GenerateAccessToken("tenant1");
+                string accessToken = await GenerateAccessToken(username: "tenant1");
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 int cityId = 9999;
 
                 // Act
                 var response = await client.GetAsync($"property/tenant/items/{cityId}");
+
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
 
@@ -288,7 +294,7 @@ namespace Rent.Tests.IntegrationTests
             return PerformTest(async (client) =>
             {
                 // Arrange
-                string accessToken = await GenerateAccessToken("landlord1");
+                string accessToken = await GenerateAccessToken(username: "landlord1");
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                 // Act
@@ -305,16 +311,17 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task GetPropertiesByLandlordId_UserNotFound_ReturnsNotFound()
+        public Task GetPropertiesByLandlordId_ReturnsUserNotFound()
         {
             return PerformTest(async (client) =>
             {
                 // Arrange
-                string accessToken = await GenerateAccessToken("landlord1", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxaxxxxxx");
+                string accessToken = await GenerateAccessToken(username: "landlord1", fakeUserId: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxaxxxxxx");
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                 // Act
                 var response = await client.GetAsync("property/landlord/items");
+
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
 
@@ -339,7 +346,7 @@ namespace Rent.Tests.IntegrationTests
             return PerformTest(async (client) =>
             {
                 // Arrange
-                string accessToken = await GenerateAccessToken("landlord1");
+                string accessToken = await GenerateAccessToken(username: "landlord1");
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 int propertyId = 1;
 
@@ -357,17 +364,18 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task GetPropertyFullInfoById_PropertyNotFound_ReturnsNotFound()
+        public Task GetPropertyFullInfoById_ReturnsPropertyNotFound()
         {
             return PerformTest(async (client) =>
             {
                 // Arrange
-                string accessToken = await GenerateAccessToken("landlord1");
+                string accessToken = await GenerateAccessToken(username: "landlord1");
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                 int propertyId = 9999;
 
                 // Act
                 var response = await client.GetAsync($"property/item/{propertyId}");
+
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
 
@@ -401,13 +409,14 @@ namespace Rent.Tests.IntegrationTests
             return PerformTest(async (client) =>
             {
                 // Arrange
-                string accessToken = await GenerateAccessToken("landlord1");
+                string accessToken = await GenerateAccessToken(username: "landlord1");
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                 int propertyId = 1;
 
                 // Act
                 var response = await client.DeleteAsync($"property/landlord/{propertyId}");
+
                 var responseContent = await response.Content.ReadAsStringAsync();
 
                 // Assert
@@ -423,18 +432,19 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task DeleteProperty_PropertyNotFound_ReturnsNotFound()
+        public Task DeleteProperty_ReturnsPropertyNotFound()
         {
             return PerformTest(async (client) =>
             {
                 // Arrange
-                string accessToken = await GenerateAccessToken("landlord1");
+                string accessToken = await GenerateAccessToken(username: "landlord1");
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                 int propertyId = 9999;
 
                 // Act
                 var response = await client.DeleteAsync($"property/landlord/{propertyId}");
+
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
 
@@ -445,18 +455,19 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task DeleteProperty_PropertyNotFound_AccessDenied_ReturnsForbidden()
+        public Task DeleteProperty_ReturnsForbidden()
         {
             return PerformTest(async (client) =>
             {
                 // Arrange
-                string accessToken = await GenerateAccessToken("landlord1", fakeUserId: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxaxxxxxx");
+                string accessToken = await GenerateAccessToken(username: "landlord1", fakeUserId: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxaxxxxxx");
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                 int propertyId = 1;
 
                 // Act
                 var response = await client.DeleteAsync($"property/landlord/{propertyId}");
+
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
 

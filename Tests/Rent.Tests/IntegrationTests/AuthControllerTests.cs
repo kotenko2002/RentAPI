@@ -1,94 +1,219 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using NUnit.Framework;
 using Rent.Service.Services.Authorization.Views;
 using Rent.Tests.Helpers;
+using RentAPI.Infrastructure.Middlewares;
 using RentAPI.Models.Auth;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace Rent.Tests.IntegrationTests
 {
-    public class AuthControllerTests
+    public class AuthControllerTests : BaseIntegrationTest
     {
-        private IntegrationTestHelper _helper;
-        private WebApplicationFactory<RentAPI.Program> _factory;
-        private HttpClient _client;
-
-        [SetUp]
-        public void Setup()
+        #region Register
+        [Test]
+        public Task Register_ReturnsOk()
         {
-            _helper = new IntegrationTestHelper();
-            _factory = _helper.GetWebApplicationFactory(Guid.NewGuid().ToString());
-            _client = _factory.CreateClient();
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                var model = new RegisterModel
+                {
+                    Username = "TestUsername",
+                    Role = "Tenant",
+                    Email = "testuser1@gmail.com",
+                    Phone = "0988987776",
+                    Password = "Qwerty123!"
+                };
+                var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+
+                // Act
+                var response = await client.PostAsync("auth/register", content);
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(responseContent, Is.EqualTo("User created successfully!"));
+            });
         }
 
         [Test]
-        public async Task Register_ReturnsOk()
+        public Task Register_ReturnsUserAlreadyExists()
         {
-            var model = new RegisterModel
+            return PerformTest(async (client) =>
             {
-                Username = "TestUsername",
-                Role = "Tenant",
-                Email = "testuser1@gmail.com",
-                Phone = "0988987776",
-                Password = "Qwerty123!"
-            };
-            var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+                // Arrange
+                var model = new RegisterModel
+                {
+                    Username = "landlord1",
+                    Role = "Tenant",
+                    Email = "testuser1@gmail.com",
+                    Phone = "0988987776",
+                    Password = "Qwerty123!"
+                };
+                var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("auth/register", content);
+                // Act
+                var response = await client.PostAsync("auth/register", content);
 
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            Assert.That(await response.Content.ReadAsStringAsync(), Is.EqualTo("User created successfully!"));
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Conflict));
+                Assert.That(errorResponse.Message, Is.EqualTo("User already exists!"));
+            });
+        }
+        #endregion
+
+        #region Login
+        [Test]
+        public Task Login_ReturnsOk()
+        {
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                var model = new LoginModel
+                {
+                    Username = "Landlord1",
+                    Password = "Qwerty123!"
+                };
+                var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+
+                // Act
+                var response = await client.PostAsync("auth/login", content);
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var tokens = JsonConvert.DeserializeObject<TokensPairView>(responseContent);
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(tokens.AccessToken.Token, Is.Not.Null.Or.Empty);
+                Assert.That(tokens.RefreshToken.Token, Is.Not.Null.Or.Empty);
+            });
+        }
+
+        [TestCase("Landlord1", "wrongPassword")]
+        [TestCase("wrongUsername", "Qwerty123!")]
+        public Task Login_ReturnsWrongUsernameOrPassword(string username, string password)
+        {
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                var model = new LoginModel
+                {
+                    Username = username,
+                    Password = password
+                };
+                var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+
+                // Act
+                var response = await client.PostAsync("auth/login", content);
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+                Assert.That(errorResponse.Message, Is.EqualTo("Wrong username or password"));
+            });
+        }
+        #endregion
+
+        #region RefreshTokens
+        [Test]
+        public Task RefreshTokens_ReturnsOk()
+        {
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                var model = new RefreshTokensModel
+                {
+                    AccessToken = await GenerateAccessToken(username: "landlord1"),
+                    RefreshToken = "refresh_token"
+                };
+                var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+
+                // Act
+                var response = await client.PostAsync("auth/refresh-tokens", content);
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var tokens = JsonConvert.DeserializeObject<TokensPairView>(responseContent);
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(tokens.AccessToken.Token, Is.Not.Null.Or.Empty);
+                Assert.That(tokens.RefreshToken.Token, Is.Not.Null.Or.Empty);
+            });
         }
 
         [Test]
-        public async Task Login_ReturnsOk()
+        public Task RefreshTokens_ReturnsInvalidAccessTokenOrRefreshToken()
         {
-            var model = new LoginModel
+            return PerformTest(async (client) =>
             {
-                Username = "Landlord1",
-                Password = "Qwerty123!"
-            };
-            var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+                // Arrange
+                var model = new RefreshTokensModel
+                {
+                    AccessToken = await GenerateAccessToken(username: "landlord1"),
+                    RefreshToken = "wrongRefreshToken"
+                };
+                var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("auth/login", content);
+                // Act
+                var response = await client.PostAsync("auth/refresh-tokens", content);
 
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
 
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var tokens = JsonConvert.DeserializeObject<TokensPairView>(responseContent);
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+                Assert.That(errorResponse.Message, Is.EqualTo("Invalid access token or refresh token"));
+            });
+        }
+        #endregion
 
-            Assert.That(tokens.AccessToken.Token, Is.Not.Null.Or.Empty);
-            Assert.That(tokens.RefreshToken.Token, Is.Not.Null.Or.Empty);
+        #region Logout
+        [Test]
+        public Task Logout_ReturnsOk()
+        {
+            return PerformTest(async (client) =>
+            {
+                string accessToken = await GenerateAccessToken(username: "landlord1");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                // Act
+                var response = await client.DeleteAsync($"auth/logout");
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            });
         }
 
         [Test]
-        public async Task RefreshTokens_ReturnsOkAndValidTokens()
+        public Task Logout_ReturnsInvalidAccessToken()
         {
-            var model = new RefreshTokensModel
+            return PerformTest(async (client) =>
             {
-                AccessToken = await _helper.GenerateAccessToken(_factory, "landlord1"),
-                RefreshToken = "refresh_token"
-            };
-            var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+                string accessToken = await GenerateAccessToken(username: "landlord1", fakeUsername: "fakeUsername");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-            var response = await _client.PostAsync("auth/refresh-tokens", content);
+                // Act
+                var response = await client.DeleteAsync($"auth/logout");
 
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
 
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var tokens = JsonConvert.DeserializeObject<TokensPairView>(responseContent);
-
-            Assert.That(tokens.AccessToken.Token, Is.Not.Null.Or.Empty);
-            Assert.That(tokens.RefreshToken.Token, Is.Not.Null.Or.Empty);
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+                Assert.That(errorResponse.Message, Is.EqualTo("Invalid access token"));
+            });
         }
-
-        [TearDown]
-        public void TearDown()
-        {
-            _client.Dispose();
-            _factory.Dispose();
-        }
+        #endregion
     }
 }

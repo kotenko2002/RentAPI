@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -7,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Moq;
 using Rent.Entities.Cities;
 using Rent.Entities.Comments;
 using Rent.Entities.Photos;
@@ -20,6 +18,7 @@ using Rent.Storage.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Moq;
 
 namespace Rent.Tests.Helpers
 {
@@ -54,14 +53,14 @@ namespace Rent.Tests.Helpers
             string databaseName = Guid.NewGuid().ToString();
 
             var dbContextDescriptor = services.SingleOrDefault(d =>
-                        d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
+                d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
             services.Remove(dbContextDescriptor);
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseInMemoryDatabase(databaseName);
             });
         }
-        public async Task<string> GenerateAccessToken(string username, string fakeUserId = null)
+        public async Task<string> GenerateAccessToken(string username, string fakeUserId = null, string fakeUsername = null)
         {
             using var scope = _factory.Services.CreateScope();
             var config = scope.ServiceProvider.GetRequiredService<IOptions<JwtConfig>>().Value;
@@ -72,7 +71,7 @@ namespace Rent.Tests.Helpers
             var authClaims = new List<Claim>
             {
                 new Claim("userId", fakeUserId ?? user.Id),
-                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Name, fakeUsername ?? user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
             IList<string> userRoles = await userManager.GetRolesAsync(user);

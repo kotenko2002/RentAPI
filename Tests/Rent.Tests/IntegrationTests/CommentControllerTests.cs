@@ -12,181 +12,183 @@ using Rent.Tests.Helpers;
 
 namespace Rent.Tests.IntegrationTests
 {
-    public class CommentControllerTests
+    public class CommentControllerTests : BaseIntegrationTest
     {
-        private IntegrationTestHelper _helper;
-        private WebApplicationFactory<RentAPI.Program> _factory;
-        private HttpClient _client;
-
-        [SetUp]
-        public void Setup()
-        {
-            _helper = new IntegrationTestHelper();
-            _factory = _helper.GetWebApplicationFactory(Guid.NewGuid().ToString());
-            _client = _factory.CreateClient();
-        }
-
         #region AddNewProperty
         [Test]
-        public async Task AddNewProperty_ReturnsOk()
+        public Task AddNewProperty_ReturnsOk()
         {
-            // Arrange
-            string accessToken = await _helper.GenerateAccessToken(_factory, "tenant1");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-            var model = new AddCommentModel
+            return PerformTest(async (client) =>
             {
-                PropertyId = 1,
-                Message = "Test message",
-                Rate = Rate.Average
-            };
+                // Arrange
+                string accessToken = await GenerateAccessToken(username: "tenant1");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-            var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+                var model = new AddCommentModel
+                {
+                    PropertyId = 1,
+                    Message = "Test message",
+                    Rate = Rate.Average
+                };
 
-            // Act
-            var response = await _client.PostAsync("comment/tenant/add", content);
-            var responseContent = await response.Content.ReadAsStringAsync();
+                var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
 
-            // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            Assert.That(responseContent, Is.EqualTo("Added successfully!"));
+                // Act
+                var response = await client.PostAsync("comment/tenant/add", content);
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(responseContent, Is.EqualTo("Added successfully!"));
+            });
         }
 
         [Test]
-        public async Task AddNewProperty_AccessDenied_ReturnsForbidden()
+        public Task AddNewProperty_ReturnsForbidden()
         {
-            // Arrange
-            string accessToken = await _helper.GenerateAccessToken(_factory, "tenant2");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-            var model = new AddCommentModel
+            return PerformTest(async (client) =>
             {
-                PropertyId = 1,
-                Message = "Test message",
-                Rate = Rate.Average
-            };
+                // Arrange
+                string accessToken = await GenerateAccessToken(username: "tenant2");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-            var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+                var model = new AddCommentModel
+                {
+                    PropertyId = 1,
+                    Message = "Test message",
+                    Rate = Rate.Average
+                };
 
-            // Act
-            var response = await _client.PostAsync("comment/tenant/add", content);
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
+                var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
 
-            // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
-            Assert.That(errorResponse.Message, Is.EqualTo("Access denied. You do not have permission to comment this property."));
+                // Act
+                var response = await client.PostAsync("comment/tenant/add", content);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
+                Assert.That(errorResponse.Message, Is.EqualTo("Access denied. You do not have permission to comment this property."));
+            });
         }
 
         #endregion
 
         #region GetCommentsByPropertyId
         [Test]
-        public async Task GetCommentsByPropertyId_ReturnsOk()
+        public Task GetCommentsByPropertyId_ReturnsOk()
         {
-            // Arrange
-            string accessToken = await _helper.GenerateAccessToken(_factory, "tenant1");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            int propertyId = 1;
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                string accessToken = await GenerateAccessToken(username: "tenant1");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                int propertyId = 1;
 
-            // Act
-            var response = await _client.GetAsync($"comment/items/{propertyId}");
+                // Act
+                var response = await client.GetAsync($"comment/items/{propertyId}");
 
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var comments = JsonConvert.DeserializeObject<IEnumerable<CommentView>>(responseContent);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var comments = JsonConvert.DeserializeObject<IEnumerable<CommentView>>(responseContent);
 
-            // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            Assert.That(comments,
-               Is.EqualTo(CommentViews).Using(new CommentViewEqualityComparer()));
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(comments,
+                   Is.EqualTo(CommentViews).Using(new CommentViewEqualityComparer()));
+            });
         }
 
         [Test]
-        public async Task GetCommentsByPropertyId_PropertyNotFound_ReturnsNotFound()
+        public Task GetCommentsByPropertyId_ReturnsPropertyNotFound()
         {
-            // Arrange
-            string accessToken = await _helper.GenerateAccessToken(_factory, "tenant1");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            int propertyId = 9999;
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                string accessToken = await GenerateAccessToken(username: "tenant1");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                int propertyId = 9999;
 
-            // Act
-            var response = await _client.GetAsync($"comment/items/{propertyId}");
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
+                // Act
+                var response = await client.GetAsync($"comment/items/{propertyId}");
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
 
-            // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
-            Assert.That(errorResponse.Message, Is.EqualTo("Property not found."));
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+                Assert.That(errorResponse.Message, Is.EqualTo("Property not found."));
+            });
         }
-        #endregion
-
-        #region MyRDeletePropertyegion
-        [Test]
-        public async Task DeleteProperty_ReturnsOk()
-        {
-            // Arrange
-            string accessToken = await _helper.GenerateAccessToken(_factory, "tenant1");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            int commentId = 1; // Replace with appropriate test data
-
-            // Act
-            var response = await _client.DeleteAsync($"comment/tenant/{commentId}");
-
-            // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-
-            var responseContent = await response.Content.ReadAsStringAsync();
-            Assert.That(responseContent, Is.EqualTo("Deleted successfully!"));
-        }
-
-        [Test]
-        public async Task DeleteProperty_CommentNotFound_ReturnsNotFound()
-        {
-            // Arrange
-            string accessToken = await _helper.GenerateAccessToken(_factory, "tenant1");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            int commentId = 9999; // Replace with appropriate test data that does not exist in the database
-
-            // Act
-            var response = await _client.DeleteAsync($"comment/tenant/{commentId}");
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
-
-            // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
-            Assert.That(errorResponse.Message, Is.EqualTo("Comment not found."));
-        }
-
-        [Test]
-        public async Task DeleteProperty_AccessDenied_ReturnsForbidden()
-        {
-            // Arrange
-            string accessToken = await _helper.GenerateAccessToken(_factory, "tenant2");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            int commentId = 1; // Replace with appropriate test data that tenant2 does not have access to
-
-            // Act
-            var response = await _client.DeleteAsync($"comment/tenant/{commentId}");
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
-
-            // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
-            Assert.That(errorResponse.Message, Is.EqualTo("Access denied. You do not have permission to delete this comment."));
-        }
-        #endregion
 
         private IEnumerable<CommentView> CommentViews =>
             new[]
             {
                 new CommentView {  Id = 1, UserName = "tenant1", Message = "Message1", Rate = Rate.Average  }
             };
+        #endregion
 
-        [TearDown]
-        public void TearDown()
+        #region MyRDeletePropertyegion
+        [Test]
+        public Task DeleteProperty_ReturnsOk()
         {
-            _client.Dispose();
-            _factory.Dispose();
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                string accessToken = await GenerateAccessToken(username: "tenant1");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                int commentId = 1; // Replace with appropriate test data
+
+                // Act
+                var response = await client.DeleteAsync($"comment/tenant/{commentId}");
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+                Assert.That(responseContent, Is.EqualTo("Deleted successfully!"));
+            });
         }
+
+        [Test]
+        public Task DeleteProperty_ReturnsCommentNotFound()
+        {
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                string accessToken = await GenerateAccessToken(username: "tenant1");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                int commentId = 9999; // Replace with appropriate test data that does not exist in the database
+
+                // Act
+                var response = await client.DeleteAsync($"comment/tenant/{commentId}");
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+                Assert.That(errorResponse.Message, Is.EqualTo("Comment not found."));
+            });
+        }
+
+        [Test]
+        public Task DeleteProperty_ReturnsForbidden()
+        {
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                string accessToken = await GenerateAccessToken(username: "tenant2");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                int commentId = 1; // Replace with appropriate test data that tenant2 does not have access to
+
+                // Act
+                var response = await client.DeleteAsync($"comment/tenant/{commentId}");
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
+                Assert.That(errorResponse.Message, Is.EqualTo("Access denied. You do not have permission to delete this comment."));
+            });
+        }
+        #endregion
     }
 }

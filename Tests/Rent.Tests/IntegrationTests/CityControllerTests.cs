@@ -8,37 +8,28 @@ using System.Net.Http.Headers;
 
 namespace Rent.Tests.IntegrationTests
 {
-    public class CityControllerTests
+    public class CityControllerTests : BaseIntegrationTest
     {
-        private IntegrationTestHelper _helper;
-        private WebApplicationFactory<RentAPI.Program> _factory;
-        private HttpClient _client;
-
-        [SetUp]
-        public void Setup()
-        {
-            _helper = new IntegrationTestHelper();
-            _factory = _helper.GetWebApplicationFactory(Guid.NewGuid().ToString());
-            _client = _factory.CreateClient();
-        }
-
         [Test]
-        public async Task GetAllCities_ReturnsOk()
+        public Task GetAllCities_ReturnsOk()
         {
-            // Arrange
-            string accessToken = await _helper.GenerateAccessToken(_factory, "landlord1");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                string accessToken = await GenerateAccessToken(username: "landlord1");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-            // Act
-            var response = await _client.GetAsync("city/items");
+                // Act
+                var response = await client.GetAsync("city/items");
 
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var cities = JsonConvert.DeserializeObject<IEnumerable<CityView>>(responseContent);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var cities = JsonConvert.DeserializeObject<IEnumerable<CityView>>(responseContent);
 
-            // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            Assert.That(cities,
-               Is.EqualTo(CityViews).Using(new CityViewEqualityComparer()));
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(cities,
+                   Is.EqualTo(CityViews).Using(new CityViewEqualityComparer()));
+            });
         }
 
         private IEnumerable<CityView> CityViews =>
@@ -47,12 +38,5 @@ namespace Rent.Tests.IntegrationTests
                 new CityView { Id = 1, Name = "City1" },
                 new CityView { Id = 2, Name = "City2" }
             };
-
-        [TearDown]
-        public void TearDown()
-        {
-            _client.Dispose();
-            _factory.Dispose();
-        }
     }
 }
