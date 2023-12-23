@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using Rent.Entities.Properties;
 using Rent.Service.Services.Properties.Views;
-using Rent.Tests.Helpers;
+using Rent.Tests.Infrastructure;
 using RentAPI.Infrastructure.Middlewares;
 using RentAPI.Models.Properties;
 using System.Net;

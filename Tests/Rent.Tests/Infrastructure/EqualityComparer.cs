@@ -10,7 +10,7 @@ using Rent.Service.Services.Properties.Views;
 using Rent.Service.Services.Responses.Views;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Rent.Tests.Helpers
+namespace Rent.Tests.Infrastructure
 {
     internal class UserEqualityComparer : IEqualityComparer<User>
     {

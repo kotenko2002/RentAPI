@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using NUnit.Framework;
 using Rent.Service.Services.Authorization.Views;
-using Rent.Tests.Helpers;
+using Rent.Tests.Infrastructure;
 using RentAPI.Infrastructure.Middlewares;
 using RentAPI.Models.Auth;
 using System.Net;

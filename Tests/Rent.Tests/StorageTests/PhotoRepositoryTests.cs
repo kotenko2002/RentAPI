@@ -2,17 +2,17 @@
 using Rent.Entities.Photos;
 using Rent.Storage.Configuration;
 using Rent.Storage.Repositories.Photos;
-using Rent.Tests.Helpers;
+using Rent.Tests.Infrastructure;
 
 namespace Rent.Tests.StorageTests
 {
-    public class PhotoRepositoryTests
+    public class PhotoRepositoryTests : BaseUnitTest
     {
         #region BasicMethods
         [Test]
         public async Task PhotoRepository_GetAllAsync_ReturnsAllValues()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var photoRepository = new PhotoRepository(context);
 
             var actual = await photoRepository.FindAllAsync();
@@ -24,7 +24,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task PhotoRepository_AddAsync_AddsValueToDatabase()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var photoRepository = new PhotoRepository(context);
 
             var photo = new Photo { Id = "6", PropertyId = 2 };
@@ -38,7 +38,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task PhotoRepository_AddRangeAsync_AddsValueToDatabase()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var photoRepository = new PhotoRepository(context);
 
             var photos = new[]
@@ -56,7 +56,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task PhotoRepository_RemoveAsync_RemovesValueFromDatabase()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var photoRepository = new PhotoRepository(context);
 
             var photo = new Photo { Id = "1", PropertyId = 1 };
@@ -70,7 +70,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task PhotoRepository_RemoveRangeAsync_RemovesValuesFromDatabase()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var photoRepository = new PhotoRepository(context);
 
             var photos = new[]
@@ -89,7 +89,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task PhotoRepository_GetPhotosByIds_ReturnsCorrectPhotos()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var photoRepository = new PhotoRepository(context);
 
             var ids = new[] { "1", "2" };

@@ -3,18 +3,18 @@ using Rent.Entities.Properties;
 using Rent.Entities.Responses;
 using Rent.Storage.Configuration;
 using Rent.Storage.Repositories.Responses;
-using Rent.Tests.Helpers;
+using Rent.Tests.Infrastructure;
 
 namespace Rent.Tests.StorageTests
 {
-    public class ResponseRepositoryTests
+    public class ResponseRepositoryTests : BaseUnitTest
     {
         #region BasicMethods
         [TestCase(1)]
         [TestCase(2)]
         public async Task ResponseRepository_FindAsync_ReturnsSingleValue(int id)
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var responseRepository = new ResponseRepository(context);
 
             var actual = await responseRepository.FindAsync(id);
@@ -27,7 +27,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task ResponseRepository_GetAllAsync_ReturnsAllValues()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var responseRepository = new ResponseRepository(context);
 
             var actual = await responseRepository.FindAllAsync();
@@ -39,7 +39,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task ResponseRepository_AddAsync_AddsValueToDatabase()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var responseRepository = new ResponseRepository(context);
 
             var response = new Response { Id = 5, TenantId = "4", PropertyId = 2, Message = "Message5", Status = ResponseStatus.ApprovedToDialog };
@@ -53,7 +53,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task ResponseRepository_AddRangeAsync_AddsValueToDatabase()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var responseRepository = new ResponseRepository(context);
 
             var responses = new[]
@@ -71,7 +71,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task ResponseRepository_RemoveAsync_RemovesValueFromDatabase()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var responseRepository = new ResponseRepository(context);
 
             var response = new Response { Id = 1, TenantId = "3", PropertyId = 1, Message = "Message1", Status = ResponseStatus.ApprovedToRent };
@@ -85,7 +85,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task ResponseRepository_RemoveRangeAsync_RemovesValuesFromDatabase()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var responseRepository = new ResponseRepository(context);
 
             var responses = new[]
@@ -104,7 +104,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task ResponseRepository_GetFullResponseByIdAsync_ReturnsExpectedResponse()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var responseRepository = new ResponseRepository(context);
 
             var expected = ExpectedResponses.FirstOrDefault(x => x.Id == 1);
@@ -121,7 +121,7 @@ namespace Rent.Tests.StorageTests
         [TestCase(1, "4")]
         public async Task ResponseRepository_GetResponseByPropertyAndTenantIdsAsync_ReturnsExpectedResponse(int propertyId, string tenantId)
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var responseRepository = new ResponseRepository(context);
 
             var expected = ExpectedResponses.FirstOrDefault(x => x.PropertyId == propertyId && x.TenantId == tenantId);

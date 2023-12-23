@@ -1,21 +1,20 @@
-﻿using Castle.Core.Resource;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using Rent.Entities.Comments;
 using Rent.Entities.Users;
 using Rent.Storage.Configuration;
 using Rent.Storage.Repositories.Comments;
-using Rent.Tests.Helpers;
+using Rent.Tests.Infrastructure;
 
 namespace Rent.Tests.StorageTests
 {
-    public class CommentRepositoryTests
+    public class CommentRepositoryTests : BaseUnitTest
     {
         #region BasicMethods
         [TestCase(1)]
         [TestCase(2)]
         public async Task CommentRepository_FindAsync_ReturnsSingleValue(int id)
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var commentRepository = new CommentRepository(context);
 
             var actual = await commentRepository.FindAsync(id);
@@ -28,7 +27,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task CommentRepository_GetAllAsync_ReturnsAllValues()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var commentRepository = new CommentRepository(context);
 
             var actual = await commentRepository.FindAllAsync();
@@ -40,7 +39,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task CommentRepository_AddAsync_AddsValueToDatabase()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var commentRepository = new CommentRepository(context);
 
             var comment = new Comment { Id = 3, TenantId = "3", PropertyId = 1, Message = "Message1", Rate = Rate.Excellent };
@@ -54,7 +53,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task CommentRepository_AddRangeAsync_AddsValueToDatabase()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var commentRepository = new CommentRepository(context);
 
             var comments = new[]
@@ -72,7 +71,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task CommentRepository_RemoveAsync_RemovesValueFromDatabase()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var commentRepository = new CommentRepository(context);
 
             var comment = new Comment { Id = 1, TenantId = "3", PropertyId = 1, Message = "Message1", Rate = Rate.Average };
@@ -86,7 +85,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task CommentRepository_RemoveRangeAsync_RemovesValuesFromDatabase()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var commentRepository = new CommentRepository(context);
 
             var comments = new[]
@@ -105,7 +104,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task CommentRepository_GetFullCommentsByPropertyIdAsync_ReturnsAllCommentsForProperty()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var commentRepository = new CommentRepository(context);
 
             var actual = await commentRepository.GetFullCommentsByPropertyIdAsync(1);
@@ -122,7 +121,7 @@ namespace Rent.Tests.StorageTests
         [TestCase(2)]
         public async Task CommentRepository_GetFullCommentByIdAsync_ReturnsSingleComment(int id)
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var commentRepository = new CommentRepository(context);
 
             var actual = await commentRepository.GetFullCommentByIdAsync(id);

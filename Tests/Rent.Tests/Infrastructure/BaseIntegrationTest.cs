@@ -20,7 +20,7 @@ using System.Security.Claims;
 using System.Text;
 using Moq;
 
-namespace Rent.Tests.Helpers
+namespace Rent.Tests.Infrastructure
 {
     public class BaseIntegrationTest
     {
@@ -47,7 +47,6 @@ namespace Rent.Tests.Helpers
             _client.Dispose();
             _factory.Dispose();
         }
-
         public void SetUpInMemoryDb(IServiceCollection services)
         {
             string databaseName = Guid.NewGuid().ToString();
@@ -60,6 +59,7 @@ namespace Rent.Tests.Helpers
                 options.UseInMemoryDatabase(databaseName);
             });
         }
+
         public async Task<string> GenerateAccessToken(string username, string fakeUserId = null, string fakeUsername = null)
         {
             using var scope = _factory.Services.CreateScope();
@@ -90,11 +90,12 @@ namespace Rent.Tests.Helpers
 
             return new JwtSecurityTokenHandler().WriteToken(accessToken);
         }
+
         public FormFile GetPhoto(string fileName)
         {
             string currentDirectory = Directory.GetCurrentDirectory();
             string projectDirectory = Directory.GetParent(currentDirectory).Parent.Parent.FullName;
-            string filePath = Path.Combine(projectDirectory, "Helpers", "Photos", fileName);
+            string filePath = Path.Combine(projectDirectory, "Infrastructure", "Photos", fileName);
 
             string fileExtension = Path.GetExtension(fileName);
             string contentType = GetContentType(fileExtension);

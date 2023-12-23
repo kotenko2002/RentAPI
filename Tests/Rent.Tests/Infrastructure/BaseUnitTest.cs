@@ -10,11 +10,11 @@ using Rent.Entities.Users;
 using Rent.Storage.Configuration;
 using RentAPI.Infrastructure.Mapper;
 
-namespace Rent.Tests.Helpers
+namespace Rent.Tests.Infrastructure
 {
-    public static class UnitTestHelper
+    public class BaseUnitTest
     {
-        public static DbContextOptions<ApplicationDbContext> GetUnitTestDbOptions()
+        public DbContextOptions<ApplicationDbContext> GetUnitTestDbOptions()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -28,7 +28,7 @@ namespace Rent.Tests.Helpers
             return options;
         }
 
-        public static IMapper CreateMapperProfile()
+        public IMapper CreateMapperProfile()
         {
             var myProfile = new AutomapperProfile();
             var configuration = new MapperConfiguration(cfg => cfg.AddProfile(myProfile));
@@ -36,7 +36,7 @@ namespace Rent.Tests.Helpers
             return new Mapper(configuration);
         }
 
-        public static void SeedData(ApplicationDbContext context)
+        private void SeedData(ApplicationDbContext context)
         {
             context.Cities.AddRange(
                 new City { Id = 1, Name = "City1" },

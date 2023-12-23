@@ -7,18 +7,18 @@ using Rent.Entities.Responses;
 using Rent.Entities.Users;
 using Rent.Storage.Configuration;
 using Rent.Storage.Repositories.Properties;
-using Rent.Tests.Helpers;
+using Rent.Tests.Infrastructure;
 
 namespace Rent.Tests.StorageTests
 {
-    public class PropertyRepositoryTests
+    public class PropertyRepositoryTests : BaseUnitTest
     {
         #region BasicMethods
         [TestCase(1)]
         [TestCase(2)]
         public async Task PropertyRepository_FindAsync_ReturnsSingleValue(int id)
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var propertyRepository = new PropertyRepository(context);
 
             var actual = await propertyRepository.FindAsync(id);
@@ -31,7 +31,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task PropertyRepository_GetAllAsync_ReturnsAllValues()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var propertyRepository = new PropertyRepository(context);
 
             var actual = await propertyRepository.FindAllAsync();
@@ -43,7 +43,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task PropertyRepository_AddAsync_AddsValueToDatabase()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var propertyRepository = new PropertyRepository(context);
 
             var property = new Property { Id = 4, LandlordId = "3", CityId = 3, Address = "Address4", Description = "Description4", Price = 4000, Status = PropertyStatus.Available };
@@ -57,7 +57,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task PropertyRepository_AddRangeAsync_AddsValueToDatabase()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var propertyRepository = new PropertyRepository(context);
 
             var properties = new[]
@@ -75,7 +75,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task PropertyRepository_RemoveAsync_RemovesValueFromDatabase()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var propertyRepository = new PropertyRepository(context);
 
             var property = new Property { Id = 1, LandlordId = "1", CityId = 1, Address = "Address1", Description = "Description1", Price = 1000, Status = PropertyStatus.Available };
@@ -89,7 +89,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task PropertyRepository_RemoveRangeAsync_RemovesValuesFromDatabase()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var propertyRepository = new PropertyRepository(context);
 
             var properties = new[]
@@ -108,7 +108,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task PropertyRepository_GetFullPropertyByIdAsync_ReturnsExpectedProperty()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var propertyRepository = new PropertyRepository(context);
 
             var expected = ExpectedProperties.FirstOrDefault(x => x.Id == 1);
@@ -128,7 +128,7 @@ namespace Rent.Tests.StorageTests
         [TestCase(2)]
         public async Task PropertyRepository_GetPropertiesByCityIdAsync_ReturnsExpectedProperties(int cityId)
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var propertyRepository = new PropertyRepository(context);
 
             var expected = ExpectedProperties.Where(x => x.CityId == cityId).ToList();
@@ -144,7 +144,7 @@ namespace Rent.Tests.StorageTests
         [TestCase("2")]
         public async Task PropertyRepository_GetPropertiesByLandlordIdAsync_ReturnsExpectedProperties(string landlordId)
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var propertyRepository = new PropertyRepository(context);
 
             var expected = ExpectedProperties.Where(x => x.LandlordId == landlordId);

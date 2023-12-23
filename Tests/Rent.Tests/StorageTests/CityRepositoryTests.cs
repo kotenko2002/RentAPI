@@ -2,18 +2,18 @@
 using Rent.Entities.Cities;
 using Rent.Storage.Configuration;
 using Rent.Storage.Repositories.Cities;
-using Rent.Tests.Helpers;
+using Rent.Tests.Infrastructure;
 
 namespace Rent.Tests.StorageTests
 {
-    public class CityRepositoryTests
+    public class CityRepositoryTests : BaseUnitTest
     {
         #region BasicMethods
         [TestCase(1)]
         [TestCase(2)]
         public async Task CityRepository_FindAsync_ReturnsSingleValue(int id)
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var cityRepository = new CityRepository(context);
 
             var actual = await cityRepository.FindAsync(id);
@@ -26,7 +26,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task CityRepository_GetAllAsync_ReturnsAllValues()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var cityRepository = new CityRepository(context);
 
             var actual = await cityRepository.FindAllAsync();
@@ -38,7 +38,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task CityRepository_AddAsync_AddsValueToDatabase()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var cityRepository = new CityRepository(context);
 
             var city = new City { Id = 3, Name = "City3" };
@@ -52,7 +52,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task CityRepository_AddRangeAsync_AddsValueToDatabase()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var cityRepository = new CityRepository(context);
 
             var cities = new[]
@@ -70,7 +70,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task CityRepository_RemoveAsync_RemovesValueFromDatabase()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var cityRepository = new CityRepository(context);
 
             var city = new City { Id = 1, Name = "City1" };
@@ -84,7 +84,7 @@ namespace Rent.Tests.StorageTests
         [Test]
         public async Task CityRepository_RemoveRangeAsync_RemovesValuesFromDatabase()
         {
-            using var context = new ApplicationDbContext(UnitTestHelper.GetUnitTestDbOptions());
+            using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var cityRepository = new CityRepository(context);
 
             var cities = new[]

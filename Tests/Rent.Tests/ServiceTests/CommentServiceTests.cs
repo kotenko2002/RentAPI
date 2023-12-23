@@ -6,11 +6,11 @@ using Rent.Entities.Properties;
 using Rent.Entities.Responses;
 using Rent.Service.Services.Comments;
 using Rent.Storage.Uow;
-using Rent.Tests.Helpers;
+using Rent.Tests.Infrastructure;
 
 namespace Rent.Tests.ServiceTests
 {
-    public class CommentServiceTests
+    public class CommentServiceTests : BaseUnitTest
     {
         [Test]
         public async Task CommentService_AddAsync_AddsComment()
@@ -24,7 +24,7 @@ namespace Rent.Tests.ServiceTests
                 .ReturnsAsync(response);
             mockUnitOfWork.Setup(x => x.CommentRepository.AddAsync(It.IsAny<Comment>()));
 
-            var commentService = new CommentService(UnitTestHelper.CreateMapperProfile(), mockUnitOfWork.Object);
+            var commentService = new CommentService(CreateMapperProfile(), mockUnitOfWork.Object);
 
             // Act
             await commentService.AddAsync(comment);
@@ -44,7 +44,7 @@ namespace Rent.Tests.ServiceTests
             mockUnitOfWork.Setup(x => x.CommentRepository.GetFullCommentByIdAsync(It.IsAny<int>())).ReturnsAsync(comment);
             mockUnitOfWork.Setup(x => x.CommentRepository.RemoveAsync(It.IsAny<Comment>()));
 
-            var commentService = new CommentService(UnitTestHelper.CreateMapperProfile(), mockUnitOfWork.Object);
+            var commentService = new CommentService(CreateMapperProfile(), mockUnitOfWork.Object);
 
             // Act
             await commentService.DeleteAsync(comment.Id, comment.TenantId);
@@ -78,7 +78,7 @@ namespace Rent.Tests.ServiceTests
             mockUnitOfWork.Setup(x => x.PropertyRepository.FindAsync(It.IsAny<int>())).ReturnsAsync(property);
             mockUnitOfWork.Setup(x => x.CommentRepository.GetFullCommentsByPropertyIdAsync(It.IsAny<int>())).ReturnsAsync(comments);
 
-            var commentService = new CommentService(UnitTestHelper.CreateMapperProfile(), mockUnitOfWork.Object);
+            var commentService = new CommentService(CreateMapperProfile(), mockUnitOfWork.Object);
 
             // Act
             var actual = await commentService.GetCommentsByPropertyIdAsync(1);
