@@ -27,7 +27,7 @@ namespace RentAPI.Controllers
             _propertyService = propertyService;
         }
 
-        [HttpPost("landlord/add"), Authorize(Roles = Roles.Landlord)]
+        [HttpPost("landlord"), Authorize(Roles = Roles.Landlord)]
         public async Task<IActionResult> AddNewProperty([FromForm] AddPropertyModel model)
         {
             if (model.Photos.Any(photo => !photo.IsPhoto()))
@@ -43,7 +43,7 @@ namespace RentAPI.Controllers
             return Ok("Added successfully!");
         }
 
-        [HttpPatch("landlord/edit"), Authorize(Roles = Roles.Landlord)]
+        [HttpPatch("landlord"), Authorize(Roles = Roles.Landlord)]
         public async Task<IActionResult> EditProperty([FromForm] EditPropertyModel model)
         {
             var descriptor = _mapper.Map<EditPropertyDescriptor>(model);

@@ -1,276 +1,328 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using Rent.Entities.Properties;
 using Rent.Service.Services.Properties.Views;
-using RentAPI.Infrastructure.Middlewares;
-using System.Net.Http.Headers;
-using System.Net;
 using Rent.Tests.Helpers;
-using Microsoft.AspNetCore.Http;
+using RentAPI.Infrastructure.Middlewares;
 using RentAPI.Models.Properties;
-using Microsoft.AspNetCore.TestHost;
-using Rent.Service.Services.FileStorage;
-using Moq;
-using Microsoft.Extensions.DependencyInjection;
+using System.Net;
+using System.Net.Http.Headers;
 
 namespace Rent.Tests.IntegrationTests
 {
-    public class PropertyControllerTests
+    public class PropertyControllerTests : BaseIntegrationTest
     {
-        private IntegrationTestHelper _helper;
-        private WebApplicationFactory<RentAPI.Program> _factory;
-        private HttpClient _client;
-
-        [SetUp]
-        public void Setup()
+        #region AddNewProperty
+        [Test]
+        public Task AddNewProperty_ReturnsOk()
         {
-            _helper = new IntegrationTestHelper();
-            _factory = _helper.GetWebApplicationFactory(Guid.NewGuid().ToString());
-            _client = _factory.CreateClient();
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                string accessToken = await GenerateAccessToken("landlord1");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                var model = GetAddPropertyModel(cityId: 1);
+                var content = GetMultipartFormDataContentByAddPropertyModel(model);
+
+                // Act
+                var response = await client.PostAsync("property/landlord", content);
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(responseContent, Is.EqualTo("Added successfully!"));
+            }, configureServices: service =>
+            {
+                FileStorageServiceClientMock
+                   .Setup(_ => _.UploadFilesAsync(It.IsAny<IFormFile[]>()))
+                       .ReturnsAsync(new List<string> { "6", "7", "8" });
+
+                service.AddSingleton(FileStorageServiceClientMock.Object);
+            });
         }
 
-        #region AddNewProperty
-        //[Test]
-        //public async Task AddNewProperty_ReturnsOk()
-        //{
-        //    // Arrange
-        //    _factory.WithWebHostBuilder(builder =>
-        //    {
-        //        builder.ConfigureTestServices(services =>
-        //        {
-        //            var fileStorageService = services.SingleOrDefault(d => d.ServiceType == typeof(IFileStorageService));
-        //            services.Remove(fileStorageService);
+        [Test]
+        public Task AddNewProperty_CityNotFound_ReturnsNotFound()
+        {
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                string accessToken = await GenerateAccessToken("landlord1");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-        //            var mockedService = new Mock<IFileStorageService>();
-        //            mockedService.Setup(_ => _.UploadFilesAsync(It.IsAny<IFormFile[]>()))
-        //                .ReturnsAsync(new List<string> { "fileId1", "fileId2" });
-        //            services.AddScoped(_ => mockedService.Object);
-        //        });
-        //    });
-        //    _client = _factory.CreateClient();
+                var model = GetAddPropertyModel(cityId: 9999);
+                var content = GetMultipartFormDataContentByAddPropertyModel(model);
 
-        //    string accessToken = await _helper.GenerateAccessToken(_factory, "landlord1");
-        //    _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                // Act
+                var response = await client.PostAsync("property/landlord", content);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
 
-        //    var model = new AddPropertyModel
-        //    {
-        //        CityId = 1,
-        //        Address = "Test Address",
-        //        Description = "Test Description",
-        //        Price = 1000,
-        //        Photos = new IFormFile[]
-        //        {
-        //            _helper.GetPhoto("jpg1.jpg"),
-        //            _helper.GetPhoto("jpg2.jpg"),
-        //            _helper.GetPhoto("jpg3.jpg"),
-        //        }
-        //    };
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+                Assert.That(errorResponse.Message, Is.EqualTo("City not found."));
+            });
+        }
 
-        //    var content = new MultipartFormDataContent
-        //    {
-        //        { new StringContent(model.CityId.ToString()), "CityId" },
-        //        { new StringContent(model.Address), "Address" },
-        //        { new StringContent(model.Description), "Description" },
-        //        { new StringContent(model.Price.ToString()), "Price" }
-        //    };
-        //    foreach (var photo in model.Photos)
-        //    {
-        //        var streamContent = new StreamContent(photo.OpenReadStream());
-        //        streamContent.Headers.ContentType = new MediaTypeHeaderValue(photo.ContentType);
-        //        content.Add(streamContent, "Photos", photo.FileName);
-        //    }
-        //    // Act
-        //    var response = await _client.PostAsync("property/landlord/add", content);
-
-        //    // Assert
-        //    Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        //}
-
-        //[Test]
-        //public async Task AddNewProperty_UnsupportedFileType_ReturnsBadRequest()
-        //{
-        //    // Arrange
-        //    string accessToken = await _helper.GenerateAccessToken(_factory, "landlord1");
-        //    _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-        //    var model = new AddPropertyModel
-        //    {
-        //        CityId = 1,
-        //        Address = "Test Address",
-        //        Description = "Test Description",
-        //        Price = 1000,
-        //        Photos = new IFormFile[] { /* Mocked IFormFile objects with unsupported file types */ }
-        //    };
-
-        //    var content = new MultipartFormDataContent();
-        //    // Add model properties to the content
-
-        //    // Act
-        //    var response = await _client.PostAsync("property/landlord/add", content);
-
-        //    // Assert
-        //    Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
-        //}
-
-        //[Test]
-        //public async Task AddNewProperty_CityNotFound_ReturnsNotFound()
-        //{
-        //    // Arrange
-        //    string accessToken = await _helper.GenerateAccessToken(_factory, "landlord1");
-        //    _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-        //    var model = new AddPropertyModel
-        //    {
-        //        CityId = 9999, // Non-existing city ID
-        //        Address = "Test Address",
-        //        Description = "Test Description",
-        //        Price = 1000,
-        //        Photos = new IFormFile[] { /* Mocked IFormFile objects with supported file types */ }
-        //    };
-
-        //    var content = new MultipartFormDataContent();
-        //    // Add model properties to the content
-
-        //    // Act
-        //    var response = await _client.PostAsync("property/landlord/add", content);
-
-        //    // Assert
-        //    Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
-        //}
+        private AddPropertyModel GetAddPropertyModel(int cityId)
+        {
+            return new AddPropertyModel
+            {
+                CityId = cityId,
+                Address = "Test Address",
+                Description = "Test Description",
+                Price = 1000,
+                Photos = new IFormFile[]
+                {
+                    GetPhoto("jpg1.jpg"),
+                    GetPhoto("png1.png"),
+                    GetPhoto("webp1.webp"),
+                }
+            };
+        }
+        private MultipartFormDataContent GetMultipartFormDataContentByAddPropertyModel(AddPropertyModel model)
+        {
+            var content = new MultipartFormDataContent
+            {
+                { new StringContent(model.CityId.ToString()), "CityId" },
+                { new StringContent(model.Address), "Address" },
+                { new StringContent(model.Description), "Description" },
+                { new StringContent(model.Price.ToString()), "Price" }
+            };
+            foreach (var photo in model.Photos)
+            {
+                var streamContent = new StreamContent(photo.OpenReadStream());
+                streamContent.Headers.ContentType = new MediaTypeHeaderValue(photo.ContentType);
+                content.Add(streamContent, "Photos", photo.FileName);
+            }
+            return content;
+        }
         #endregion
 
-
         #region EditProperty
+        [Test]
+        public Task EditProperty_ReturnsOk()
+        {
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                string accessToken = await GenerateAccessToken("landlord1");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                var model = GetEditPropertyModel(propertyId: 1);
+                var content = GetMultipartFormDataContentByEditPropertyModel(model);
+
+                // Act
+                var response = await client.PatchAsync("property/landlord", content);
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(responseContent, Is.EqualTo("Edited successfully!"));
+            }, configureServices: service =>
+            {
+                FileStorageServiceClientMock
+                   .Setup(_ => _.UploadFilesAsync(It.IsAny<IFormFile[]>()))
+                       .ReturnsAsync(new List<string> { "6", "7", "8" });
+
+                FileStorageServiceClientMock
+                     .Setup(_ => _.DeleteFilesAsync(new string[] { "1", "2" }));
+
+                service.AddSingleton(FileStorageServiceClientMock.Object);
+            });
+        }
+
+        [Test]
+        public Task EditProperty_PropertyNotFound_ReturnsNotFound()
+        {
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                string accessToken = await GenerateAccessToken("landlord1");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                var model = GetEditPropertyModel(propertyId: 9999);
+                var content = GetMultipartFormDataContentByEditPropertyModel(model);
+
+                // Act
+                var response = await client.PatchAsync("property/landlord", content);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+                Assert.That(errorResponse.Message, Is.EqualTo("Property not found."));
+            });
+        }
+
+        [Test]
+        public Task EditProperty_PropertyNotFound_AccessDenied_ReturnsForbidden()
+        {
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                string accessToken = await GenerateAccessToken("landlord1", fakeUserId: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxaxxxxxx");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                var model = GetEditPropertyModel(propertyId: 1);
+                var content = GetMultipartFormDataContentByEditPropertyModel(model);
+
+                // Act
+                var response = await client.PatchAsync("property/landlord", content);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
+                Assert.That(errorResponse.Message, Is.EqualTo("Access denied. You do not have permission to edit this property."));
+            });
+        }
+
+        private EditPropertyModel GetEditPropertyModel(int propertyId)
+        {
+            return new EditPropertyModel
+            {
+                Id = propertyId,
+                Address = "Edited Test Address",
+                Description = "Edited Test Description",
+                Price = 5000,
+                Status = PropertyStatus.Occupied,
+                Photos = new IFormFile[]
+                {
+                    GetPhoto("jpg2.jpg"),
+                    GetPhoto("png2.png"),
+                    GetPhoto("webp2.webp"),
+                },
+                PhotoIdsToDelete = new string[] { "1", "2" }
+            };
+        }
+
+        private MultipartFormDataContent GetMultipartFormDataContentByEditPropertyModel(EditPropertyModel model)
+        {
+            var content = new MultipartFormDataContent
+            {
+                { new StringContent(model.Id.ToString()), "Id" },
+                { new StringContent(model.Address), "Address" },
+                { new StringContent(model.Description), "Description" },
+                { new StringContent(model.Price.ToString()), "Price" },
+                { new StringContent(model.Status.ToString()), "Status" }
+            };
+
+            foreach (var photo in model.Photos)
+            {
+                var streamContent = new StreamContent(photo.OpenReadStream());
+                streamContent.Headers.ContentType = new MediaTypeHeaderValue(photo.ContentType);
+                content.Add(streamContent, "Photos", photo.FileName);
+            }
+
+            foreach (var photoId in model.PhotoIdsToDelete)
+            {
+                content.Add(new StringContent(photoId), "PhotoIdsToDelete");
+            }
+
+            return content;
+        }
 
         #endregion
 
         #region GetPropertiesByCityId
         [Test]
-        public async Task GetPropertiesByCityId_ReturnsOk()
+        public Task GetPropertiesByCityId_ReturnsOk()
         {
-            // Arrange
-            string accessToken = await _helper.GenerateAccessToken(_factory, "tenant1");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            int cityId = 1;
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                string accessToken = await GenerateAccessToken("tenant1");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                int cityId = 1;
 
-            // Act
-            var response = await _client.GetAsync($"property/tenant/items/{cityId}");
+                // Act
+                var response = await client.GetAsync($"property/tenant/items/{cityId}");
 
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var properties = JsonConvert.DeserializeObject<IEnumerable<PropertyView>>(responseContent);
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var properties = JsonConvert.DeserializeObject<IEnumerable<PropertyView>>(responseContent);
 
-            // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            Assert.That(properties,
-               Is.EqualTo(PropertyViewsByCity).Using(new PropertyViewEqualityComparer()));
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(properties,
+                   Is.EqualTo(PropertyViewsByCity).Using(new PropertyViewEqualityComparer()));
+            });
         }
 
         [Test]
-        public async Task GetPropertiesByCityId_CityNotFound_ReturnsNotFound()
+        public Task GetPropertiesByCityId_CityNotFound_ReturnsNotFound()
         {
-            // Arrange
-            string accessToken = await _helper.GenerateAccessToken(_factory, "tenant1");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            int cityId = 9999;
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                string accessToken = await GenerateAccessToken("tenant1");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                int cityId = 9999;
 
-            // Act
-            var response = await _client.GetAsync($"property/tenant/items/{cityId}");
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
+                // Act
+                var response = await client.GetAsync($"property/tenant/items/{cityId}");
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
 
-            // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
-            Assert.That(errorResponse.Message, Is.EqualTo("City not found."));
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+                Assert.That(errorResponse.Message, Is.EqualTo("City not found."));
+            });
         }
+
+        private IEnumerable<PropertyView> PropertyViewsByCity =>
+           new[]
+           {
+                new PropertyView { Id = 1, CityName = "City1", Address = "Address1", PhotoUrl = "https://drive.google.com/uc?id=1", Price = 1000 }
+           };
         #endregion
 
         #region GetPropertiesByLandlordId
         [Test]
-        public async Task GetPropertiesByLandlordId_ReturnsOk()
+        public Task GetPropertiesByLandlordId_ReturnsOk()
         {
-            // Arrange
-            string accessToken = await _helper.GenerateAccessToken(_factory, "landlord1");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-            // Act
-            var response = await _client.GetAsync("property/landlord/items");
-
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var properties = JsonConvert.DeserializeObject<IEnumerable<PropertyView>>(responseContent);
-
-            // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            Assert.That(properties,
-               Is.EqualTo(PropertyViewsByLandlord).Using(new PropertyViewEqualityComparer()));
-        }
-
-        [Test]
-        public async Task GetPropertiesByLandlordId_UserNotFound_ReturnsNotFound()
-        {
-            // Arrange
-            string accessToken = await _helper.GenerateAccessToken(_factory, "landlord1", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxaxxxxxx");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-            // Act
-            var response = await _client.GetAsync("property/landlord/items");
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
-
-            // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
-            Assert.That(errorResponse.Message, Is.EqualTo("User not found."));
-        }
-        #endregion
-
-        #region GetPropertyFullInfoById
-        [Test]
-        public async Task GetPropertyFullInfoById_ReturnsOk()
-        {
-            // Arrange
-            string accessToken = await _helper.GenerateAccessToken(_factory, "landlord1");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            int propertyId = 1;
-
-            // Act
-            var response = await _client.GetAsync($"property/item/{propertyId}");
-
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var property = JsonConvert.DeserializeObject<PropertyDetailView>(responseContent);
-
-            // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-            Assert.That(property,
-               Is.EqualTo(PropertyDetailViews).Using(new PropertyDetailViewEqualityComparer()));
-        }
-
-        [Test]
-        public async Task GetPropertyFullInfoById_PropertyNotFound_ReturnsNotFound()
-        {
-            // Arrange
-            string accessToken = await _helper.GenerateAccessToken(_factory, "landlord1");
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            int propertyId = 9999;
-
-            // Act
-            var response = await _client.GetAsync($"property/item/{propertyId}");
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
-
-            // Assert
-            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
-            Assert.That(errorResponse.Message, Is.EqualTo("Property not found."));
-        }
-        #endregion
-
-        #region DeleteProperty
-
-        #endregion
-
-        private IEnumerable<PropertyView> PropertyViewsByCity =>
-            new[]
+            return PerformTest(async (client) =>
             {
-                new PropertyView { Id = 1, CityName = "City1", Address = "Address1", PhotoUrl = "https://drive.google.com/uc?id=1", Price = 1000 }
-            };
+                // Arrange
+                string accessToken = await GenerateAccessToken("landlord1");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                // Act
+                var response = await client.GetAsync("property/landlord/items");
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var properties = JsonConvert.DeserializeObject<IEnumerable<PropertyView>>(responseContent);
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(properties,
+                   Is.EqualTo(PropertyViewsByLandlord).Using(new PropertyViewEqualityComparer()));
+            });
+        }
+
+        [Test]
+        public Task GetPropertiesByLandlordId_UserNotFound_ReturnsNotFound()
+        {
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                string accessToken = await GenerateAccessToken("landlord1", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxaxxxxxx");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                // Act
+                var response = await client.GetAsync("property/landlord/items");
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+                Assert.That(errorResponse.Message, Is.EqualTo("User not found."));
+            });
+        }
 
         private IEnumerable<PropertyView> PropertyViewsByLandlord =>
             new[]
@@ -278,28 +330,141 @@ namespace Rent.Tests.IntegrationTests
                 new PropertyView { Id = 1, CityName = "City1", Address = "Address1", PhotoUrl = "https://drive.google.com/uc?id=1", Price = 1000 },
                 new PropertyView { Id = 2, CityName = "City2", Address = "Address2", PhotoUrl = "https://drive.google.com/uc?id=3", Price = 2000 }
             };
+        #endregion
+
+        #region GetPropertyFullInfoById
+        [Test]
+        public Task GetPropertyFullInfoById_ReturnsOk()
+        {
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                string accessToken = await GenerateAccessToken("landlord1");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                int propertyId = 1;
+
+                // Act
+                var response = await client.GetAsync($"property/item/{propertyId}");
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var property = JsonConvert.DeserializeObject<PropertyDetailView>(responseContent);
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(property,
+                   Is.EqualTo(PropertyDetailViews).Using(new PropertyDetailViewEqualityComparer()));
+            });
+        }
+
+        [Test]
+        public Task GetPropertyFullInfoById_PropertyNotFound_ReturnsNotFound()
+        {
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                string accessToken = await GenerateAccessToken("landlord1");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                int propertyId = 9999;
+
+                // Act
+                var response = await client.GetAsync($"property/item/{propertyId}");
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+                Assert.That(errorResponse.Message, Is.EqualTo("Property not found."));
+            });
+        }
 
         private PropertyDetailView PropertyDetailViews =>
-            new PropertyDetailView
-            {
-                Id = 1,
-                CityId = 1,
-                CityName = "City1",
-                Address = "Address1",
-                Description = "Description1",
-                Price = 1000,
-                Photos = new PhotoView[]
-                {
+           new PropertyDetailView
+           {
+               Id = 1,
+               CityId = 1,
+               CityName = "City1",
+               Address = "Address1",
+               Description = "Description1",
+               Price = 1000,
+               Photos = new PhotoView[]
+               {
                     new PhotoView { Id = "1", Url = "https://drive.google.com/uc?id=1" },
                     new PhotoView { Id = "2", Url = "https://drive.google.com/uc?id=2" }
-                }
-            };
+               }
+           };
+        #endregion
 
-        [TearDown]
-        public void TearDown()
+        #region DeleteProperty
+        [Test]
+        public Task DeleteProperty_ReturnsOk()
         {
-            _client.Dispose();
-            _factory.Dispose();
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                string accessToken = await GenerateAccessToken("landlord1");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                int propertyId = 1;
+
+                // Act
+                var response = await client.DeleteAsync($"property/landlord/{propertyId}");
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(responseContent, Is.EqualTo("Deleted successfully!"));
+            }, configureServices: service =>
+            {
+                FileStorageServiceClientMock
+                     .Setup(_ => _.DeleteFilesAsync(new string[] { "1", "2"}));
+
+                service.AddSingleton(FileStorageServiceClientMock.Object);
+            });
         }
+
+        [Test]
+        public Task DeleteProperty_PropertyNotFound_ReturnsNotFound()
+        {
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                string accessToken = await GenerateAccessToken("landlord1");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                int propertyId = 9999;
+
+                // Act
+                var response = await client.DeleteAsync($"property/landlord/{propertyId}");
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+                Assert.That(errorResponse.Message, Is.EqualTo("Property not found."));
+            });
+        }
+
+        [Test]
+        public Task DeleteProperty_PropertyNotFound_AccessDenied_ReturnsForbidden()
+        {
+            return PerformTest(async (client) =>
+            {
+                // Arrange
+                string accessToken = await GenerateAccessToken("landlord1", fakeUserId: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxaxxxxxx");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                int propertyId = 1;
+
+                // Act
+                var response = await client.DeleteAsync($"property/landlord/{propertyId}");
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var errorResponse = JsonConvert.DeserializeObject<ErrorResponse>(responseContent);
+
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Forbidden));
+                Assert.That(errorResponse.Message, Is.EqualTo("Access denied. You do not have permission to delete this property."));
+            });
+        }
+        #endregion
     }
 }
