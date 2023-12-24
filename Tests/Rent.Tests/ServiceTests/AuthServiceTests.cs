@@ -11,10 +11,11 @@ using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using Rent.Tests.Infrastructure;
 
 namespace Rent.Tests.ServiceTests
 {
-    public class AuthServiceTests
+    public class AuthServiceTests : BaseUnitTest
     {
         private Mock<UserManager<User>> _mockUserManager;
         private IOptions<JwtConfig> _jwtOptions;

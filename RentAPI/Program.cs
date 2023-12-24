@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Rent.Entities.Users;
@@ -32,7 +33,9 @@ namespace RentAPI
                 .AddDefaultTokenProviders();
             #endregion
 
-            builder.Services.AddCustomServices();
+            var googleDriveConfig = builder.Services.BuildServiceProvider()
+                .GetRequiredService<IOptionsSnapshot<GoogleDriveConfig>>().Value;
+            builder.Services.AddCustomServices(googleDriveConfig);
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

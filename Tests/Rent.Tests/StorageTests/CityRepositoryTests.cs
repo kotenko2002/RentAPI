@@ -100,7 +100,7 @@ namespace Rent.Tests.StorageTests
         }
         #endregion
 
-        private static IEnumerable<City> ExpectedCities =>
+        private IEnumerable<City> ExpectedCities =>
             new[]
             {
                 new City { Id = 1, Name = "City1" },
