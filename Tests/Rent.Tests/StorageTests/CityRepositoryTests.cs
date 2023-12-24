@@ -11,7 +11,7 @@ namespace Rent.Tests.StorageTests
         #region BasicMethods
         [TestCase(1)]
         [TestCase(2)]
-        public async Task CityRepository_FindAsync_ReturnsSingleValue(int id)
+        public async Task CityRepository_FindAsync_ShouldReturnSingleValue(int id)
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var cityRepository = new CityRepository(context);
@@ -24,7 +24,7 @@ namespace Rent.Tests.StorageTests
         }
 
         [Test]
-        public async Task CityRepository_GetAllAsync_ReturnsAllValues()
+        public async Task CityRepository_GetAllAsync_ShouldReturnAllValues()
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var cityRepository = new CityRepository(context);
@@ -36,7 +36,7 @@ namespace Rent.Tests.StorageTests
         }
 
         [Test]
-        public async Task CityRepository_AddAsync_AddsValueToDatabase()
+        public async Task CityRepository_AddAsync_ShouldAddValueToDatabase()
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var cityRepository = new CityRepository(context);
@@ -50,7 +50,7 @@ namespace Rent.Tests.StorageTests
         }
 
         [Test]
-        public async Task CityRepository_AddRangeAsync_AddsValueToDatabase()
+        public async Task CityRepository_AddRangeAsync_ShouldAddValueToDatabase()
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var cityRepository = new CityRepository(context);
@@ -68,7 +68,7 @@ namespace Rent.Tests.StorageTests
         }
 
         [Test]
-        public async Task CityRepository_RemoveAsync_RemovesValueFromDatabase()
+        public async Task CityRepository_RemoveAsync_ShouldRemoveValueFromDatabase()
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var cityRepository = new CityRepository(context);
@@ -82,7 +82,7 @@ namespace Rent.Tests.StorageTests
         }
 
         [Test]
-        public async Task CityRepository_RemoveRangeAsync_RemovesValuesFromDatabase()
+        public async Task CityRepository_RemoveRangeAsync_ShouldRemoveValuesFromDatabase()
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var cityRepository = new CityRepository(context);

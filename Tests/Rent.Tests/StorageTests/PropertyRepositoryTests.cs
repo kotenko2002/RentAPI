@@ -16,7 +16,7 @@ namespace Rent.Tests.StorageTests
         #region BasicMethods
         [TestCase(1)]
         [TestCase(2)]
-        public async Task PropertyRepository_FindAsync_ReturnsSingleValue(int id)
+        public async Task PropertyRepository_FindAsync_ShouldReturnSingleValue(int id)
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var propertyRepository = new PropertyRepository(context);
@@ -29,7 +29,7 @@ namespace Rent.Tests.StorageTests
         }
 
         [Test]
-        public async Task PropertyRepository_GetAllAsync_ReturnsAllValues()
+        public async Task PropertyRepository_GetAllAsync_ShouldReturnAllValues()
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var propertyRepository = new PropertyRepository(context);
@@ -41,7 +41,7 @@ namespace Rent.Tests.StorageTests
         }
 
         [Test]
-        public async Task PropertyRepository_AddAsync_AddsValueToDatabase()
+        public async Task PropertyRepository_AddAsync_ShouldAddValueToDatabase()
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var propertyRepository = new PropertyRepository(context);
@@ -55,7 +55,7 @@ namespace Rent.Tests.StorageTests
         }
 
         [Test]
-        public async Task PropertyRepository_AddRangeAsync_AddsValueToDatabase()
+        public async Task PropertyRepository_AddRangeAsync_ShouldAddValueToDatabase()
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var propertyRepository = new PropertyRepository(context);
@@ -73,7 +73,7 @@ namespace Rent.Tests.StorageTests
         }
 
         [Test]
-        public async Task PropertyRepository_RemoveAsync_RemovesValueFromDatabase()
+        public async Task PropertyRepository_RemoveAsync_ShouldRemoveValueFromDatabase()
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var propertyRepository = new PropertyRepository(context);
@@ -87,7 +87,7 @@ namespace Rent.Tests.StorageTests
         }
 
         [Test]
-        public async Task PropertyRepository_RemoveRangeAsync_RemovesValuesFromDatabase()
+        public async Task PropertyRepository_RemoveRangeAsync_ShouldRemoveValuesFromDatabase()
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var propertyRepository = new PropertyRepository(context);
@@ -106,7 +106,7 @@ namespace Rent.Tests.StorageTests
         #endregion
 
         [Test]
-        public async Task PropertyRepository_GetFullPropertyByIdAsync_ReturnsExpectedProperty()
+        public async Task PropertyRepository_GetFullPropertyByIdAsync_ShouldReturnExpectedProperty()
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var propertyRepository = new PropertyRepository(context);
@@ -126,7 +126,7 @@ namespace Rent.Tests.StorageTests
 
         [TestCase(1)]
         [TestCase(2)]
-        public async Task PropertyRepository_GetPropertiesByCityIdAsync_ReturnsExpectedProperties(int cityId)
+        public async Task PropertyRepository_GetPropertiesByCityIdAsync_ShouldReturnExpectedProperties(int cityId)
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var propertyRepository = new PropertyRepository(context);
@@ -142,7 +142,7 @@ namespace Rent.Tests.StorageTests
 
         [TestCase("1")]
         [TestCase("2")]
-        public async Task PropertyRepository_GetPropertiesByLandlordIdAsync_ReturnsExpectedProperties(string landlordId)
+        public async Task PropertyRepository_GetPropertiesByLandlordIdAsync_ShouldReturnExpectedProperties(string landlordId)
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var propertyRepository = new PropertyRepository(context);

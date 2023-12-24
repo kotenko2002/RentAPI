@@ -12,7 +12,7 @@ namespace Rent.Tests.StorageTests
         #region BasicMethods
         [TestCase(1)]
         [TestCase(2)]
-        public async Task CommentRepository_FindAsync_ReturnsSingleValue(int id)
+        public async Task CommentRepository_FindAsync_ShouldReturnSingleValue(int id)
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var commentRepository = new CommentRepository(context);
@@ -25,7 +25,7 @@ namespace Rent.Tests.StorageTests
         }
 
         [Test]
-        public async Task CommentRepository_GetAllAsync_ReturnsAllValues()
+        public async Task CommentRepository_GetAllAsync_ShouldReturnAllValues()
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var commentRepository = new CommentRepository(context);
@@ -37,7 +37,7 @@ namespace Rent.Tests.StorageTests
         }
 
         [Test]
-        public async Task CommentRepository_AddAsync_AddsValueToDatabase()
+        public async Task CommentRepository_AddAsync_ShouldAddValueToDatabase()
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var commentRepository = new CommentRepository(context);
@@ -51,7 +51,7 @@ namespace Rent.Tests.StorageTests
         }
 
         [Test]
-        public async Task CommentRepository_AddRangeAsync_AddsValueToDatabase()
+        public async Task CommentRepository_AddRangeAsync_ShouldAddValueToDatabase()
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var commentRepository = new CommentRepository(context);
@@ -69,7 +69,7 @@ namespace Rent.Tests.StorageTests
         }
 
         [Test]
-        public async Task CommentRepository_RemoveAsync_RemovesValueFromDatabase()
+        public async Task CommentRepository_RemoveAsync_ShouldRemoveValueFromDatabase()
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var commentRepository = new CommentRepository(context);
@@ -83,7 +83,7 @@ namespace Rent.Tests.StorageTests
         }
 
         [Test]
-        public async Task CommentRepository_RemoveRangeAsync_RemovesValuesFromDatabase()
+        public async Task CommentRepository_RemoveRangeAsync_ShouldRemoveValuesFromDatabase()
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var commentRepository = new CommentRepository(context);
@@ -102,7 +102,7 @@ namespace Rent.Tests.StorageTests
         #endregion
 
         [Test]
-        public async Task CommentRepository_GetFullCommentsByPropertyIdAsync_ReturnsAllCommentsForProperty()
+        public async Task CommentRepository_GetFullCommentsByPropertyIdAsync_ShouldReturnAllCommentsForProperty()
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var commentRepository = new CommentRepository(context);
@@ -119,7 +119,7 @@ namespace Rent.Tests.StorageTests
 
         [TestCase(1)]
         [TestCase(2)]
-        public async Task CommentRepository_GetFullCommentByIdAsync_ReturnsSingleComment(int id)
+        public async Task CommentRepository_GetFullCommentByIdAsync_ShouldReturnSingleComment(int id)
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var commentRepository = new CommentRepository(context);

@@ -104,7 +104,7 @@ namespace Rent.Tests.ServiceTests
         }
 
         [Test]
-        public async Task LoginAsync_SuccessfulLogin_ReturnsExpectedTokensPairView()
+        public async Task LoginAsync_SuccessfulLogin_ShouldReturnExpectedTokensPairView()
         {
             // Arrange
             var descriptor = new LoginDescriptor { Username = "TestUser", Password = "TestPassword" };
@@ -129,41 +129,6 @@ namespace Rent.Tests.ServiceTests
             _mockUserManager.Verify(x => x.UpdateAsync(user), Times.Once);
         }
 
-        //[Test]
-        //public void RefreshTokensAsync_InvalidTokens_ThrowsBusinessException()
-        //{
-        //    // Arrange
-        //    var descriptor = new RefreshTokensDescriptor { AccessToken = "InvalidAccessToken", RefreshToken = "InvalidRefreshToken" };
-
-        //    // Act & Assert
-        //    Assert.ThrowsAsync<BusinessException>(() => _authService.RefreshTokensAsync(descriptor));
-        //}
-
-        //[Test]
-        //public void RefreshTokensAsync_UserNotFound_ThrowsBusinessException()
-        //{
-        //    // Arrange
-        //    var descriptor = new RefreshTokensDescriptor { AccessToken = "ValidAccessToken", RefreshToken = "ValidRefreshToken" };
-        //    _mockUserManager.Setup(x => x.FindByNameAsync(It.IsAny<string>()))
-        //        .ReturnsAsync((User)null);
-
-        //    // Act & Assert
-        //    Assert.ThrowsAsync<BusinessException>(() => _authService.RefreshTokensAsync(descriptor));
-        //}
-
-        //[Test]
-        //public void RefreshTokensAsync_SuccessfulRefresh_NoExceptionThrown()
-        //{
-        //    // Arrange
-        //    var descriptor = new RefreshTokensDescriptor { AccessToken = "ValidAccessToken", RefreshToken = "ValidRefreshToken" };
-        //    var user = new User { Id = "TestUserId", UserName = "TestUser", RefreshToken = "ValidRefreshToken", RefreshTokenExpiryTime = DateTime.Now.AddDays(1) };
-        //    _mockUserManager.Setup(x => x.FindByNameAsync(It.IsAny<string>()))
-        //        .ReturnsAsync(user);
-
-        //    // Act & Assert
-        //    Assert.DoesNotThrowAsync(() => _authService.RefreshTokensAsync(descriptor));
-        //}
-
         [Test]
         public void RefreshTokensAsync_UserNotFound_ThrowsBusinessException()
         {
@@ -176,36 +141,6 @@ namespace Rent.Tests.ServiceTests
             var ex = Assert.ThrowsAsync<BusinessException>(() => _authService.RefreshTokensAsync(descriptor));
             Assert.That(ex.Message, Is.EqualTo("Invalid access token or refresh token"));
         }
-
-        //[Test]
-        //public async Task RefreshTokensAsync_SuccessfulRefresh_ReturnsExpectedTokensPairView()
-        //{
-        //    // Arrange
-        //    var descriptor = new RefreshTokensDescriptor { AccessToken = GenerateValidJwtToken(), RefreshToken = "ValidRefreshToken" };
-        //    var user = new User { Id = "TestUserId", UserName = "TestUser", RefreshToken = "ValidRefreshToken", RefreshTokenExpiryTime = DateTime.Now.AddDays(1) };
-        //    _mockUserManager.Setup(x => x.FindByNameAsync(It.IsAny<string>()))
-        //        .ReturnsAsync(user);
-
-        //    // Act
-        //    var result = await _authService.RefreshTokensAsync(descriptor);
-
-        //    // Assert
-        //    Assert.IsNotNull(result);
-        //    //Assert.AreEqual(user.Id, result.User.Id);
-        //    _mockUserManager.Verify(x => x.FindByNameAsync(user.UserName), Times.Once);
-        //    _mockUserManager.Verify(x => x.UpdateAsync(user), Times.Once);
-        //}
-
-        //[Test]
-        //public void RefreshTokensAsync_InvalidTokens_ThrowsBusinessException()
-        //{
-        //    // Arrange
-        //    var descriptor = new RefreshTokensDescriptor { AccessToken = "InvalidAccessToken", RefreshToken = "InvalidRefreshToken" };
-
-        //    // Act & Assert
-        //    var ex = Assert.ThrowsAsync<BusinessException>(() => _authService.RefreshTokensAsync(descriptor));
-        //    Assert.That(ex.Message, Is.EqualTo("Invalid access token or refresh token"));
-        //}
 
         private string GenerateValidJwtToken()
         {
@@ -229,6 +164,5 @@ namespace Rent.Tests.ServiceTests
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
     }
 }

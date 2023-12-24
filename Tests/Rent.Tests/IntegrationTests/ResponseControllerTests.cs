@@ -16,7 +16,7 @@ namespace Rent.Tests.IntegrationTests
     {
         #region AddNewResponse
         [Test]
-        public Task AddNewResponse_ReturnsOk()
+        public Task ResponseController_AddNewResponse_ShouldReturnOk()
         {
             return PerformTest(async (client) =>
             {
@@ -44,7 +44,7 @@ namespace Rent.Tests.IntegrationTests
 
         #region GetResponseByPropertyId
         [Test]
-        public Task GetResponsesByPropertyId_ReturnsOk()
+        public Task ResponseController_GetResponsesByPropertyId_ShouldReturnOk()
         {
             return PerformTest(async (client) =>
             {
@@ -67,7 +67,7 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task GetResponseByPropertyId_ReturnsPropertyNotFound()
+        public Task ResponseController_GetResponseByPropertyId_ShouldReturnPropertyNotFound()
         {
             return PerformTest(async (client) =>
             {
@@ -88,7 +88,7 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task GetResponseByPropertyId_ReturnsForbidden()
+        public Task ResponseController_GetResponseByPropertyId_ShouldReturnForbidden()
         {
             return PerformTest(async (client) =>
             {
@@ -118,7 +118,7 @@ namespace Rent.Tests.IntegrationTests
 
         #region Process
         [Test]
-        public Task Process_ReturnsOk()
+        public Task ResponseController_Process_ShouldReturnOk()
         {
             return PerformTest(async (client) =>
             {
@@ -145,7 +145,7 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task Process_AccessDenied_ReturnsForbidden()
+        public Task ResponseController_Process_AccessDenied_ShouldReturnForbidden()
         {
             return PerformTest(async (client) =>
             {

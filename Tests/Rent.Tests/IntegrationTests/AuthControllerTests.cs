@@ -14,7 +14,7 @@ namespace Rent.Tests.IntegrationTests
     {
         #region Register
         [Test]
-        public Task Register_ReturnsOk()
+        public Task  AuthController_Register_ShouldReturnOk()
         {
             return PerformTest(async (client) =>
             {
@@ -41,7 +41,7 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task Register_ReturnsUserAlreadyExists()
+        public Task  AuthController_Register_ShouldReturnUserAlreadyExists()
         {
             return PerformTest(async (client) =>
             {
@@ -71,7 +71,7 @@ namespace Rent.Tests.IntegrationTests
 
         #region Login
         [Test]
-        public Task Login_ReturnsOk()
+        public Task  AuthController_Login_ShouldReturnOk()
         {
             return PerformTest(async (client) =>
             {
@@ -98,7 +98,7 @@ namespace Rent.Tests.IntegrationTests
 
         [TestCase("Landlord1", "wrongPassword")]
         [TestCase("wrongUsername", "Qwerty123!")]
-        public Task Login_ReturnsWrongUsernameOrPassword(string username, string password)
+        public Task  AuthController_Login_ShouldReturnWrongUsernameOrPassword(string username, string password)
         {
             return PerformTest(async (client) =>
             {
@@ -125,7 +125,7 @@ namespace Rent.Tests.IntegrationTests
 
         #region RefreshTokens
         [Test]
-        public Task RefreshTokens_ReturnsOk()
+        public Task  AuthController_RefreshTokens_ShouldReturnOk()
         {
             return PerformTest(async (client) =>
             {
@@ -151,7 +151,7 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task RefreshTokens_ReturnsInvalidAccessTokenOrRefreshToken()
+        public Task  AuthController_RefreshTokens_ShouldReturnInvalidAccessTokenOrRefreshToken()
         {
             return PerformTest(async (client) =>
             {
@@ -178,7 +178,7 @@ namespace Rent.Tests.IntegrationTests
 
         #region Logout
         [Test]
-        public Task Logout_ReturnsOk()
+        public Task  AuthController_Logout_ShouldReturnOk()
         {
             return PerformTest(async (client) =>
             {
@@ -196,7 +196,7 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task Logout_ReturnsInvalidAccessToken()
+        public Task  AuthController_Logout_ShouldReturnInvalidAccessToken()
         {
             return PerformTest(async (client) =>
             {

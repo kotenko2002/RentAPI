@@ -16,7 +16,7 @@ namespace Rent.Tests.IntegrationTests
     {
         #region AddNewProperty
         [Test]
-        public Task AddNewProperty_ReturnsOk()
+        public Task CommentController_AddNewProperty_ShouldReturnOk()
         {
             return PerformTest(async (client) =>
             {
@@ -44,7 +44,7 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task AddNewProperty_ReturnsForbidden()
+        public Task CommentController_AddNewProperty_ShouldReturnForbidden()
         {
             return PerformTest(async (client) =>
             {
@@ -76,7 +76,7 @@ namespace Rent.Tests.IntegrationTests
 
         #region GetCommentsByPropertyId
         [Test]
-        public Task GetCommentsByPropertyId_ReturnsOk()
+        public Task CommentController_GetCommentsByPropertyId_ShouldReturnOk()
         {
             return PerformTest(async (client) =>
             {
@@ -99,7 +99,7 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task GetCommentsByPropertyId_ReturnsPropertyNotFound()
+        public Task CommentController_GetCommentsByPropertyId_ShouldReturnPropertyNotFound()
         {
             return PerformTest(async (client) =>
             {
@@ -128,7 +128,7 @@ namespace Rent.Tests.IntegrationTests
 
         #region MyRDeletePropertyegion
         [Test]
-        public Task DeleteProperty_ReturnsOk()
+        public Task CommentController_DeleteProperty_ShouldReturnOk()
         {
             return PerformTest(async (client) =>
             {
@@ -149,7 +149,7 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task DeleteProperty_ReturnsCommentNotFound()
+        public Task CommentController_DeleteProperty_ShouldReturnCommentNotFound()
         {
             return PerformTest(async (client) =>
             {
@@ -170,7 +170,7 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task DeleteProperty_ReturnsForbidden()
+        public Task CommentController_DeleteProperty_ShouldReturnForbidden()
         {
             return PerformTest(async (client) =>
             {

@@ -10,7 +10,7 @@ namespace Rent.Tests.StorageTests
     {
         #region BasicMethods
         [Test]
-        public async Task PhotoRepository_GetAllAsync_ReturnsAllValues()
+        public async Task PhotoRepository_GetAllAsync_ShouldReturnAllValues()
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var photoRepository = new PhotoRepository(context);
@@ -22,7 +22,7 @@ namespace Rent.Tests.StorageTests
         }
 
         [Test]
-        public async Task PhotoRepository_AddAsync_AddsValueToDatabase()
+        public async Task PhotoRepository_AddAsync_ShouldAddValueToDatabase()
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var photoRepository = new PhotoRepository(context);
@@ -36,7 +36,7 @@ namespace Rent.Tests.StorageTests
         }
 
         [Test]
-        public async Task PhotoRepository_AddRangeAsync_AddsValueToDatabase()
+        public async Task PhotoRepository_AddRangeAsync_ShouldAddValueToDatabase()
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var photoRepository = new PhotoRepository(context);
@@ -54,7 +54,7 @@ namespace Rent.Tests.StorageTests
         }
 
         [Test]
-        public async Task PhotoRepository_RemoveAsync_RemovesValueFromDatabase()
+        public async Task PhotoRepository_RemoveAsync_ShouldRemoveValueFromDatabase()
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var photoRepository = new PhotoRepository(context);
@@ -68,7 +68,7 @@ namespace Rent.Tests.StorageTests
         }
 
         [Test]
-        public async Task PhotoRepository_RemoveRangeAsync_RemovesValuesFromDatabase()
+        public async Task PhotoRepository_RemoveRangeAsync_ShouldRemoveValuesFromDatabase()
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var photoRepository = new PhotoRepository(context);
@@ -87,7 +87,7 @@ namespace Rent.Tests.StorageTests
         #endregion
 
         [Test]
-        public async Task PhotoRepository_GetPhotosByIds_ReturnsCorrectPhotos()
+        public async Task PhotoRepository_GetPhotosByIds_ShouldReturnCorrectPhotos()
         {
             using var context = new ApplicationDbContext(GetUnitTestDbOptions());
             var photoRepository = new PhotoRepository(context);

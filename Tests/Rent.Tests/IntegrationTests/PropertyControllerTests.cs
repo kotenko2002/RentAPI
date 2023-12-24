@@ -17,7 +17,7 @@ namespace Rent.Tests.IntegrationTests
     {
         #region AddNewProperty
         [Test]
-        public Task AddNewProperty_ReturnsOk()
+        public Task PropertyController_PropertyController_AddNewProperty_ShouldReturnOk()
         {
             return PerformTest(async (client) =>
             {
@@ -47,7 +47,7 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task AddNewProperty_ReturnsCityNotFound()
+        public Task PropertyController_AddNewProperty_ShouldReturnCityNotFound()
         {
             return PerformTest(async (client) =>
             {
@@ -107,7 +107,7 @@ namespace Rent.Tests.IntegrationTests
 
         #region EditProperty
         [Test]
-        public Task EditProperty_ReturnsOk()
+        public Task PropertyController_EditProperty_ShouldReturnOk()
         {
             return PerformTest(async (client) =>
             {
@@ -140,7 +140,7 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task EditProperty_ReturnsPropertyNotFound()
+        public Task PropertyController_EditProperty_ShouldReturnPropertyNotFound()
         {
             return PerformTest(async (client) =>
             {
@@ -164,7 +164,7 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task EditProperty_PropertyNotFound_ReturnsForbidden()
+        public Task PropertyController_EditProperty_PropertyNotFound_ShouldReturnForbidden()
         {
             return PerformTest(async (client) =>
             {
@@ -236,7 +236,7 @@ namespace Rent.Tests.IntegrationTests
 
         #region GetPropertiesByCityId
         [Test]
-        public Task GetPropertiesByCityId_ReturnsOk()
+        public Task PropertyController_GetPropertiesByCityId_ShouldReturnOk()
         {
             return PerformTest(async (client) =>
             {
@@ -259,7 +259,7 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task GetPropertiesByCityId_ReturnsCityNotFound()
+        public Task PropertyController_GetPropertiesByCityId_ShouldReturnCityNotFound()
         {
             return PerformTest(async (client) =>
             {
@@ -289,7 +289,7 @@ namespace Rent.Tests.IntegrationTests
 
         #region GetPropertiesByLandlordId
         [Test]
-        public Task GetPropertiesByLandlordId_ReturnsOk()
+        public Task PropertyController_GetPropertiesByLandlordId_ShouldReturnOk()
         {
             return PerformTest(async (client) =>
             {
@@ -311,7 +311,7 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task GetPropertiesByLandlordId_ReturnsUserNotFound()
+        public Task PropertyController_GetPropertiesByLandlordId_ShouldReturnUserNotFound()
         {
             return PerformTest(async (client) =>
             {
@@ -341,7 +341,7 @@ namespace Rent.Tests.IntegrationTests
 
         #region GetPropertyFullInfoById
         [Test]
-        public Task GetPropertyFullInfoById_ReturnsOk()
+        public Task PropertyController_GetPropertyFullInfoById_ShouldReturnOk()
         {
             return PerformTest(async (client) =>
             {
@@ -364,7 +364,7 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task GetPropertyFullInfoById_ReturnsPropertyNotFound()
+        public Task PropertyController_GetPropertyFullInfoById_ShouldReturnPropertyNotFound()
         {
             return PerformTest(async (client) =>
             {
@@ -404,7 +404,7 @@ namespace Rent.Tests.IntegrationTests
 
         #region DeleteProperty
         [Test]
-        public Task DeleteProperty_ReturnsOk()
+        public Task PropertyController_DeleteProperty_ShouldReturnOk()
         {
             return PerformTest(async (client) =>
             {
@@ -432,7 +432,7 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task DeleteProperty_ReturnsPropertyNotFound()
+        public Task PropertyController_DeleteProperty_ShouldReturnPropertyNotFound()
         {
             return PerformTest(async (client) =>
             {
@@ -455,7 +455,7 @@ namespace Rent.Tests.IntegrationTests
         }
 
         [Test]
-        public Task DeleteProperty_ReturnsForbidden()
+        public Task PropertyController_DeleteProperty_ShouldReturnForbidden()
         {
             return PerformTest(async (client) =>
             {

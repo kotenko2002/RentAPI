@@ -22,10 +22,12 @@ namespace Rent.Tests.ServiceTests
             // Arrange
             var comment = new Comment { TenantId = "1", PropertyId = 1, Message = "Message1", Rate = Rate.Average };
             var response = new Response { TenantId = "1", PropertyId = 1, Status = ResponseStatus.ApprovedToRent };
+
             var mockUnitOfWork = new Mock<IUnitOfWork>();
             mockUnitOfWork.Setup(uow => uow.ResponseRepository.GetResponseByPropertyAndTenantIdsAsync(comment.PropertyId, comment.TenantId)).ReturnsAsync(response);
             mockUnitOfWork.Setup(uow => uow.CommentRepository.AddAsync(comment)).Returns(Task.CompletedTask);
             mockUnitOfWork.Setup(uow => uow.CompleteAsync()).Returns(Task.CompletedTask);
+            
             var commentService = new CommentService(null, mockUnitOfWork.Object);
 
             // Act
@@ -41,8 +43,10 @@ namespace Rent.Tests.ServiceTests
         {
             // Arrange
             var comment = new Comment { TenantId = "1", PropertyId = 1, Message = "Message1", Rate = Rate.Average };
+            
             var mockUnitOfWork = new Mock<IUnitOfWork>();
             mockUnitOfWork.Setup(uow => uow.ResponseRepository.GetResponseByPropertyAndTenantIdsAsync(comment.PropertyId, comment.TenantId)).ReturnsAsync((Response)null);
+            
             var commentService = new CommentService(null, mockUnitOfWork.Object);
 
             // Act & Assert
@@ -64,12 +68,12 @@ namespace Rent.Tests.ServiceTests
             {
                 new Comment { Id = 1, Tenant = new User { UserName = "User1" }, Message = "Message1", Rate = Rate.Average }
             };
+
             var mockUnitOfWork = new Mock<IUnitOfWork>();
             mockUnitOfWork.Setup(uow => uow.PropertyRepository.FindAsync(1)).ReturnsAsync(property);
             mockUnitOfWork.Setup(uow => uow.CommentRepository.GetFullCommentsByPropertyIdAsync(1)).ReturnsAsync(comments);
-            var mockMapper = new Mock<IMapper>();
-            mockMapper.Setup(mapper => mapper.Map<IEnumerable<CommentView>>(comments)).Returns(expected);
-            var commentService = new CommentService(mockMapper.Object, mockUnitOfWork.Object);
+            
+            var commentService = new CommentService(CreateMapperProfile(), mockUnitOfWork.Object);
 
             // Act
             var actual = await commentService.GetCommentsByPropertyIdAsync(1);
@@ -98,10 +102,12 @@ namespace Rent.Tests.ServiceTests
         {
             // Arrange
             var comment = new Comment { Id = 1, TenantId = "1" };
+            
             var mockUnitOfWork = new Mock<IUnitOfWork>();
             mockUnitOfWork.Setup(uow => uow.CommentRepository.GetFullCommentByIdAsync(1)).ReturnsAsync(comment);
             mockUnitOfWork.Setup(uow => uow.CommentRepository.RemoveAsync(comment)).Returns(Task.CompletedTask);
             mockUnitOfWork.Setup(uow => uow.CompleteAsync()).Returns(Task.CompletedTask);
+            
             var commentService = new CommentService(null, mockUnitOfWork.Object);
 
             // Act
@@ -118,6 +124,7 @@ namespace Rent.Tests.ServiceTests
             // Arrange
             var mockUnitOfWork = new Mock<IUnitOfWork>();
             mockUnitOfWork.Setup(uow => uow.CommentRepository.GetFullCommentByIdAsync(1)).ReturnsAsync((Comment)null);
+            
             var commentService = new CommentService(null, mockUnitOfWork.Object);
 
             // Act & Assert
@@ -129,8 +136,10 @@ namespace Rent.Tests.ServiceTests
         {
             // Arrange
             var comment = new Comment { Id = 1, TenantId = "2" };
+            
             var mockUnitOfWork = new Mock<IUnitOfWork>();
             mockUnitOfWork.Setup(uow => uow.CommentRepository.GetFullCommentByIdAsync(1)).ReturnsAsync(comment);
+            
             var commentService = new CommentService(null, mockUnitOfWork.Object);
 
             // Act & Assert

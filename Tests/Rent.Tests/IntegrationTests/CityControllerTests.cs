@@ -11,7 +11,7 @@ namespace Rent.Tests.IntegrationTests
     public class CityControllerTests : BaseIntegrationTest
     {
         [Test]
-        public Task GetAllCities_ReturnsOk()
+        public Task CityController_GetAllCitiesShouldReturnOk()
         {
             return PerformTest(async (client) =>
             {
