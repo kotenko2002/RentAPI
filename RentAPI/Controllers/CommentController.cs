@@ -39,7 +39,7 @@ namespace RentAPI.Controllers
         }
 
         [HttpGet("items/{propertyId}")]
-        public async Task<IActionResult> GetCommentsBy(int propertyId)
+        public async Task<IActionResult> GetCommentsByPropertyId(int propertyId)
         {
             IEnumerable<CommentView> comments = await _commentService.GetCommentsByPropertyIdAsync(propertyId);
 

@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Rent.Common;
 using Rent.Entities.Cities;
 using Rent.Entities.Photos;
 using Rent.Entities.Properties;
+using Rent.Entities.Users;
 using Rent.Service.Services.FileStorage;
 using Rent.Service.Services.Properties.Descriptors;
 using Rent.Service.Services.Properties.Views;
@@ -16,15 +18,17 @@ namespace Rent.Service.Services.Properties
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _uow;
         private readonly IFileStorageService _fileStorageService;
-
+        private readonly UserManager<User> _userManager;
         public PropertyService(
             IMapper mapper,
             IUnitOfWork uow,
-            IFileStorageService fileStorageService)
+            IFileStorageService fileStorageService,
+            UserManager<User> userManager)
         {
             _mapper = mapper;
             _uow = uow;
             _fileStorageService = fileStorageService;
+            _userManager = userManager;
         }
 
         public async Task AddAsync(AddPropertyDescriptor descriptor)
@@ -123,8 +127,14 @@ namespace Rent.Service.Services.Properties
             return CreatePropertyViews(properties, city.Name);
         }
 
-        public async Task<IEnumerable<PropertyView>> GetPropertiesByLandlordId(string landlordId)
+        public async Task<IEnumerable<PropertyView>> GetPropertiesByLandlordIdAsync(string landlordId)
         {
+            var landlord = await _userManager.FindByIdAsync(landlordId);
+            if (landlord == null)
+            {
+                throw new BusinessException(HttpStatusCode.NotFound, "User not found.");
+            }
+
             IEnumerable<Property> properties = await _uow.PropertyRepository.GetPropertiesByLandlordIdAsync(landlordId);
 
             return CreatePropertyViews(properties);
@@ -133,6 +143,11 @@ namespace Rent.Service.Services.Properties
         public async Task<PropertyDetailView> GetFullInfoByIdAsync(int propertyId)
         {
             Property property = await _uow.PropertyRepository.GetFullPropertyByIdAsync(propertyId);
+
+            if (property == null)
+            {
+                throw new BusinessException(HttpStatusCode.NotFound, "Property not found.");
+            }
 
             PhotoView[] photos = property.Photos.Select(photo => new PhotoView()
             {

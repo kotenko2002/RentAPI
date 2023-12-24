@@ -2,8 +2,6 @@
 using Rent.Entities.Properties;
 using Rent.Storage.Configuration;
 using Rent.Storage.Configuration.BaseRepository;
-using System.Diagnostics;
-using System.Net;
 
 namespace Rent.Storage.Repositories.Properties
 {

@@ -39,7 +39,7 @@ namespace RentAPI.Controllers
         }
 
         [HttpGet("landlord/items/{propertyId}"), Authorize(Roles = Roles.Landlord)]
-        public async Task<IActionResult> GetResponseByPropertyId(int propertyId)
+        public async Task<IActionResult> GetResponsesByPropertyId(int propertyId)
         {
             string landlordId = _httpContextAccessor.HttpContext.User.GetUserId();
 

@@ -12,7 +12,7 @@ namespace RentAPI.Infrastructure.Extensions
                 throw new BusinessException(HttpStatusCode.BadRequest, $"File is required.");
             }
 
-            var supportedTypes = new HashSet<string> { "image/jpeg", "image/png", "image/gif", "image/webp" };
+            var supportedTypes = new HashSet<string> { "image/jpeg", "image/png", "image/webp" };
             var contentType = file.ContentType.ToLower();
 
             return supportedTypes.Contains(contentType);

@@ -43,7 +43,7 @@ namespace RentAPI.Infrastructure.Middlewares
 
             response.StatusCode = (int)httpStatusCode;
 
-            var errorResponse = new
+            var errorResponse = new ErrorResponse()
             {
                 Message = message,
                 StatusCode = (int)httpStatusCode
