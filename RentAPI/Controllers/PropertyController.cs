@@ -27,7 +27,7 @@ namespace RentAPI.Controllers
             _propertyService = propertyService;
         }
 
-        [HttpPost("landlord/add"), Authorize(Roles = Roles.Landlord)]
+        [HttpPost("landlord"), Authorize(Roles = Roles.Landlord)]
         public async Task<IActionResult> AddNewProperty([FromForm] AddPropertyModel model)
         {
             if (model.Photos.Any(photo => !photo.IsPhoto()))
@@ -43,7 +43,7 @@ namespace RentAPI.Controllers
             return Ok("Added successfully!");
         }
 
-        [HttpPatch("landlord/edit"), Authorize(Roles = Roles.Landlord)]
+        [HttpPatch("landlord"), Authorize(Roles = Roles.Landlord)]
         public async Task<IActionResult> EditProperty([FromForm] EditPropertyModel model)
         {
             var descriptor = _mapper.Map<EditPropertyDescriptor>(model);
@@ -66,13 +66,13 @@ namespace RentAPI.Controllers
         public async Task<IActionResult> GetPropertiesByLandlordId()
         {
             string userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            IEnumerable<PropertyView> views = await _propertyService.GetPropertiesByLandlordId(userId);
+            IEnumerable<PropertyView> views = await _propertyService.GetPropertiesByLandlordIdAsync(userId);
 
             return Ok(views);
         }
 
         [HttpGet("item/{propertyId}")]
-        public async Task<IActionResult> GetPropertyFullInfoByIdAsync(int propertyId)
+        public async Task<IActionResult> GetPropertyFullInfoById(int propertyId)
         {
             return Ok(await _propertyService.GetFullInfoByIdAsync(propertyId));
         }

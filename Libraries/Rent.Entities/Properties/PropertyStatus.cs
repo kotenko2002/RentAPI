@@ -2,7 +2,6 @@
 {
     public enum PropertyStatus
     {
-        // Hidden?
         Available = 1,
         Occupied = 2
     }

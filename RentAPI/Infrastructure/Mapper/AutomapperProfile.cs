@@ -17,9 +17,9 @@ using RentAPI.Models.Responses;
 
 namespace RentAPI.Infrastructure.Mapper
 {
-    public class Mapper : Profile
+    public class AutomapperProfile : Profile
     {
-        public Mapper()
+        public AutomapperProfile()
         {
             CreateMap<LoginModel, LoginDescriptor>();
             CreateMap<RegisterModel, RegisterDescriptor>();

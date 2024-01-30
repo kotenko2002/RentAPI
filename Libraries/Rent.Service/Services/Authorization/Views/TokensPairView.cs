@@ -8,6 +8,10 @@ namespace Rent.Service.Services.Authorization.Views
         public TokenView AccessToken { get; set; }
         public TokenView RefreshToken { get; set; }
 
+        public TokensPairView()
+        {
+            
+        }
         public TokensPairView(JwtSecurityToken accessToken, User user)
         {
             AccessToken = new TokenView()

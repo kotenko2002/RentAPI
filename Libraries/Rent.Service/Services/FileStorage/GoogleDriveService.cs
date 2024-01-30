@@ -1,7 +1,5 @@
-﻿using Google.Apis.Auth.OAuth2;
-using Google.Apis.Drive.v3.Data;
+﻿using Google.Apis.Drive.v3.Data;
 using Google.Apis.Drive.v3;
-using Google.Apis.Services;
 using Microsoft.AspNetCore.Http;
 using Rent.Service.Configuration;
 using Microsoft.Extensions.Options;
@@ -10,15 +8,15 @@ using System.Net;
 
 namespace Rent.Service.Services.FileStorage
 {
-    public class GoogleDrive : IFileStorageService
+    public class GoogleDriveService : IFileStorageService
     {
         private readonly GoogleDriveConfig _config;
         private readonly DriveService _service;
 
-        public GoogleDrive(IOptions<GoogleDriveConfig> googleDriveOptions)
+        public GoogleDriveService(IOptions<GoogleDriveConfig> googleDriveOptions, DriveService service)
         {
             _config = googleDriveOptions.Value;
-            _service = CreateGoogleDriveService();
+            _service = service;
         }
 
         public async Task<IEnumerable<string>> UploadFilesAsync(IFormFile[] files)
@@ -50,23 +48,7 @@ namespace Rent.Service.Services.FileStorage
                 }
             }
         }
-
-        private DriveService CreateGoogleDriveService()
-        {
-            ServiceAccountCredential credential;
-
-            using (var stream = new FileStream("google_drive_credentials.json", FileMode.Open, FileAccess.Read))
-            credential = new ServiceAccountCredential(new ServiceAccountCredential.Initializer(_config.ClientEmail)
-            {
-                Scopes = new string[] { DriveService.Scope.Drive, DriveService.Scope.DriveFile }
-            }.FromPrivateKey(_config.PrivateKey));
-
-            return new DriveService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = _config.ApplicationName
-            });
-        }
+      
         private async Task<string> UploadFile(IFormFile file)
         {
             var fileMetadata = new Google.Apis.Drive.v3.Data.File()
