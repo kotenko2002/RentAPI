@@ -9,11 +9,11 @@ using Rent.Storage.Configuration;
 
 #nullable disable
 
-namespace RentAPI.Migrations
+namespace Rent.Storage.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231119153242_AddCitiesPropertiesResponsesCommentsTables")]
-    partial class AddCitiesPropertiesResponsesCommentsTables
+    [Migration("20240924195440_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -194,16 +194,31 @@ namespace RentAPI.Migrations
                     b.Property<int>("Rate")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("TenantId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PropertyId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("TenantId");
 
                     b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("Rent.Entities.Photos.Photo", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("PropertyId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PropertyId");
+
+                    b.ToTable("Photos");
                 });
 
             modelBuilder.Entity("Rent.Entities.Properties.Property", b =>
@@ -227,20 +242,20 @@ namespace RentAPI.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<string>("LandlordId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("Price")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CityId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("LandlordId");
 
                     b.ToTable("Properties");
                 });
@@ -264,14 +279,14 @@ namespace RentAPI.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("TenantId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PropertyId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("TenantId");
 
                     b.ToTable("Responses");
                 });
@@ -400,19 +415,30 @@ namespace RentAPI.Migrations
 
             modelBuilder.Entity("Rent.Entities.Comments.Comment", b =>
                 {
-                    b.HasOne("Rent.Entities.Properties.Property", "City")
+                    b.HasOne("Rent.Entities.Properties.Property", "Property")
                         .WithMany("Comments")
                         .HasForeignKey("PropertyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Rent.Entities.Users.User", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("UserId");
+                        .WithMany("Comments")
+                        .HasForeignKey("TenantId");
 
-                    b.Navigation("City");
+                    b.Navigation("Property");
 
                     b.Navigation("Tenant");
+                });
+
+            modelBuilder.Entity("Rent.Entities.Photos.Photo", b =>
+                {
+                    b.HasOne("Rent.Entities.Properties.Property", "Property")
+                        .WithMany("Photos")
+                        .HasForeignKey("PropertyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Property");
                 });
 
             modelBuilder.Entity("Rent.Entities.Properties.Property", b =>
@@ -420,11 +446,11 @@ namespace RentAPI.Migrations
                     b.HasOne("Rent.Entities.Cities.City", "City")
                         .WithMany("Properties")
                         .HasForeignKey("CityId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Rent.Entities.Users.User", "Landlord")
                         .WithMany("Properties")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("LandlordId");
 
                     b.Navigation("City");
 
@@ -433,17 +459,17 @@ namespace RentAPI.Migrations
 
             modelBuilder.Entity("Rent.Entities.Responses.Response", b =>
                 {
-                    b.HasOne("Rent.Entities.Properties.Property", "City")
+                    b.HasOne("Rent.Entities.Properties.Property", "Property")
                         .WithMany("Responses")
                         .HasForeignKey("PropertyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Rent.Entities.Users.User", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("UserId");
+                        .WithMany("Responses")
+                        .HasForeignKey("TenantId");
 
-                    b.Navigation("City");
+                    b.Navigation("Property");
 
                     b.Navigation("Tenant");
                 });
@@ -457,12 +483,18 @@ namespace RentAPI.Migrations
                 {
                     b.Navigation("Comments");
 
+                    b.Navigation("Photos");
+
                     b.Navigation("Responses");
                 });
 
             modelBuilder.Entity("Rent.Entities.Users.User", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("Properties");
+
+                    b.Navigation("Responses");
                 });
 #pragma warning restore 612, 618
         }

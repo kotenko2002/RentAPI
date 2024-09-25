@@ -26,7 +26,7 @@ namespace RentAPI
 
             #region Database
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("ConnStr"), b => b.MigrationsAssembly("RentAPI")));
+                options.UseSqlServer(configuration.GetConnectionString("ConnStr")));
 
             builder.Services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()

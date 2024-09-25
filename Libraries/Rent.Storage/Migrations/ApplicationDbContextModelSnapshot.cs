@@ -3,19 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Rent.Storage.Configuration;
 
 #nullable disable
 
-namespace RentAPI.Migrations
+namespace Rent.Storage.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231121074528_renameUserIdPropertyFields")]
-    partial class renameUserIdPropertyFields
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -204,6 +202,21 @@ namespace RentAPI.Migrations
                     b.HasIndex("TenantId");
 
                     b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("Rent.Entities.Photos.Photo", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("PropertyId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PropertyId");
+
+                    b.ToTable("Photos");
                 });
 
             modelBuilder.Entity("Rent.Entities.Properties.Property", b =>
@@ -415,6 +428,17 @@ namespace RentAPI.Migrations
                     b.Navigation("Tenant");
                 });
 
+            modelBuilder.Entity("Rent.Entities.Photos.Photo", b =>
+                {
+                    b.HasOne("Rent.Entities.Properties.Property", "Property")
+                        .WithMany("Photos")
+                        .HasForeignKey("PropertyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Property");
+                });
+
             modelBuilder.Entity("Rent.Entities.Properties.Property", b =>
                 {
                     b.HasOne("Rent.Entities.Cities.City", "City")
@@ -456,6 +480,8 @@ namespace RentAPI.Migrations
             modelBuilder.Entity("Rent.Entities.Properties.Property", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("Photos");
 
                     b.Navigation("Responses");
                 });
