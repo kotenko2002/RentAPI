@@ -21,8 +21,21 @@ namespace RentAPI
             var builder = WebApplication.CreateBuilder(args);
 
             ConfigurationManager configuration = builder.Configuration;
+
             builder.Services.Configure<JwtConfig>(configuration.GetSection("JWT"));
             builder.Services.Configure<GoogleDriveConfig>(configuration.GetSection("GoogleDrive"));
+
+            #region CORS
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin", builder =>
+                    builder
+                        .WithOrigins("http://localhost:3000")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials());
+            });
+            #endregion
 
             #region Database
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -93,7 +106,7 @@ namespace RentAPI
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.UseHttpsRedirection();
-
+            app.UseCors("AllowSpecificOrigin");
             app.UseAuthentication();
             app.UseAuthorization();
 

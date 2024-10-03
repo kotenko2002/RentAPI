@@ -152,7 +152,7 @@ namespace Rent.Service.Services.Properties
             PhotoView[] photos = property.Photos.Select(photo => new PhotoView()
             {
                 Id = photo.Id,
-                Url = $"https://drive.google.com/uc?id={photo.Id}"
+                Url = $"https://drive.google.com/thumbnail?id={photo.Id}&sz=w1000"
             }).ToArray();
 
             return new PropertyDetailView()
@@ -195,7 +195,7 @@ namespace Rent.Service.Services.Properties
             return properties.Select(prop =>
             {
                 string photoId = prop.Photos.FirstOrDefault()?.Id;
-                string photoUrl = photoId == null ? null : $"https://drive.google.com/uc?id={photoId}";
+                string photoUrl = photoId == null ? null : $"https://drive.google.com/thumbnail?id={photoId}&sz=w1000";
 
                 return new PropertyView()
                 {

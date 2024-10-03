@@ -283,7 +283,7 @@ namespace Rent.Tests.IntegrationTests
         private IEnumerable<PropertyView> PropertyViewsByCity =>
            new[]
            {
-                new PropertyView { Id = 1, CityName = "City1", Address = "Address1", PhotoUrl = "https://drive.google.com/uc?id=1", Price = 1000 }
+                new PropertyView { Id = 1, CityName = "City1", Address = "Address1", PhotoUrl = "https://drive.google.com/thumbnail?id=1&sz=w1000", Price = 1000 }
            };
         #endregion
 
@@ -334,8 +334,8 @@ namespace Rent.Tests.IntegrationTests
         private IEnumerable<PropertyView> PropertyViewsByLandlord =>
             new[]
             {
-                new PropertyView { Id = 1, CityName = "City1", Address = "Address1", PhotoUrl = "https://drive.google.com/uc?id=1", Price = 1000 },
-                new PropertyView { Id = 2, CityName = "City2", Address = "Address2", PhotoUrl = "https://drive.google.com/uc?id=3", Price = 2000 }
+                new PropertyView { Id = 1, CityName = "City1", Address = "Address1", PhotoUrl = "https://drive.google.com/thumbnail?id=1&sz=w1000", Price = 1000 },
+                new PropertyView { Id = 2, CityName = "City2", Address = "Address2", PhotoUrl = "https://drive.google.com/thumbnail?id=3&sz=w1000", Price = 2000 }
             };
         #endregion
 
@@ -396,8 +396,8 @@ namespace Rent.Tests.IntegrationTests
                Price = 1000,
                Photos = new PhotoView[]
                {
-                    new PhotoView { Id = "1", Url = "https://drive.google.com/uc?id=1" },
-                    new PhotoView { Id = "2", Url = "https://drive.google.com/uc?id=2" }
+                    new PhotoView { Id = "1", Url = "https://drive.google.com/thumbnail?id=1&sz=w1000" },
+                    new PhotoView { Id = "2", Url = "https://drive.google.com/thumbnail?id=2&sz=w1000" }
                }
            };
         #endregion
